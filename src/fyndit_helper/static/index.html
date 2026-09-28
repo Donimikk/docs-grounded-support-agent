@@ -1,0 +1,737 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fyndit Support Helper</title>
+<!-- Inlined so the browser does not throw a 404 for favicon.ico on every load
+     and the page stays self-contained. -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%231a5a47'/%3E%3Cpath d='M5 4h6M5 8h6M5 12h3' stroke='white' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E">
+<style>
+/* ---------------------------------------------------------------------------
+   Tokens. Every colour lives here; nothing below writes a literal value, so
+   dark mode cannot be bypassed by accident.
+   Light is the base; dark only overrides the tokens.
+--------------------------------------------------------------------------- */
+:root {
+  --ground:    #f7f7f5;   /* paper - a warm neutral, not pure white */
+  --surface:   #ffffff;
+  --sunken:    #f1f1ee;
+  --ink:       #16181d;   /* near black with a blue cast */
+  --ink-soft:  #5c6270;
+  --ink-faint: #8b909c;
+  --line:      #e3e3df;
+  --line-soft: #eeeeea;
+  --accent:    #1a5a47;   /* dark green - the primary action is "send" */
+  --accent-in: #ffffff;
+  --accent-bg: #e8f0ec;
+  --danger:    #a3342c;
+  --waiting:   #8a6a1f;
+
+  --serif: "Iowan Old Style", "Charter", Georgia, "Times New Roman", serif;
+  --sans:  ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono:  ui-monospace, "SF Mono", "Cascadia Mono", "Consolas", monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ground:    #131417;
+    --surface:   #191b1f;
+    --sunken:    #0f1013;
+    --ink:       #e9e9e5;
+    --ink-soft:  #a0a5ad;
+    --ink-faint: #767b85;
+    --line:      #2a2d33;
+    --line-soft: #212429;
+    --accent:    #4fbf97;
+    --accent-in: #0d1a15;
+    --accent-bg: #16261f;
+    --danger:    #e0796f;
+    --waiting:   #d8ab53;
+  }
+}
+
+* { box-sizing: border-box; }
+
+/* Default paragraph margins would fight the gaps from flex and make the rhythm
+   uneven. Spacing is handled by the layout alone. */
+p { margin: 0; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--ink);
+  font: 400 15px/1.6 var(--sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* --- skeleton ----------------------------------------------------------- */
+
+.page {
+  max-width: 46rem;
+  margin: 0 auto;
+  padding: 3rem 1.5rem 6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+.masthead { display: flex; flex-direction: column; gap: .35rem; }
+
+.masthead h1 {
+  margin: 0;
+  font: 600 1.3rem/1.2 var(--sans);
+  letter-spacing: -.015em;
+}
+
+.masthead p {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: .875rem;
+  max-width: 34rem;
+}
+
+/* Section label: small, monospace, letter-spaced - it separates navigation
+   from the content itself without asking for a box. */
+.eyebrow {
+  font: 500 .6875rem/1 var(--mono);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+section { display: flex; flex-direction: column; gap: .875rem; }
+
+.section-head {
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: 1rem; padding-bottom: .5rem; border-bottom: 1px solid var(--line);
+}
+
+/* --- the thread as a timeline ------------------------------------------- */
+
+.thread { display: flex; flex-direction: column; }
+
+/* A hairline on the left holds the messages together as a conversation. The
+   dot on it tells who spoke - the customer filled, you hollow. */
+.turn {
+  position: relative;
+  padding: 0 0 1.25rem 1.5rem;
+  border-left: 1px solid var(--line);
+  display: flex; flex-direction: column; gap: .5rem;
+}
+.turn:last-child { border-left-color: transparent; padding-bottom: .5rem; }
+
+.turn::before {
+  content: "";
+  position: absolute; left: -4.5px; top: .3rem;
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--accent); border: 1px solid var(--accent);
+}
+.turn[data-role="helper"]::before { background: var(--ground); }
+
+.turn-head { display: flex; align-items: center; gap: .75rem; }
+
+/* The role is toggled, not picked from a list - there are only two. */
+.role {
+  border: 0; background: none; padding: 0; cursor: pointer;
+  font: 500 .6875rem/1 var(--mono);
+  letter-spacing: .1em; text-transform: uppercase;
+  color: var(--ink); border-bottom: 1px dashed var(--line);
+}
+.role:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
+.drop {
+  margin-left: auto; border: 0; background: none; cursor: pointer;
+  color: var(--ink-faint); font: 400 .8125rem/1 var(--sans); padding: .2rem;
+}
+.drop:hover { color: var(--danger); }
+
+textarea, input[type="password"] {
+  width: 100%;
+  background: var(--surface);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  padding: .625rem .75rem;
+  font: inherit;
+  resize: none;
+  overflow: hidden;
+}
+textarea::placeholder, input::placeholder { color: var(--ink-faint); }
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+textarea:focus, input:focus { border-color: var(--accent); outline: none; }
+
+/* --- buttons ------------------------------------------------------------ */
+
+.row { display: flex; gap: .625rem; align-items: center; flex-wrap: wrap; }
+
+button { font: inherit; }
+
+.btn {
+  background: var(--accent); color: var(--accent-in);
+  border: 1px solid var(--accent); border-radius: 3px;
+  padding: .5rem 1rem; font-weight: 500; cursor: pointer;
+}
+.btn:disabled { opacity: .45; cursor: default; }
+
+.btn-quiet {
+  background: none; color: var(--ink-soft);
+  border: 1px solid var(--line); border-radius: 3px;
+  padding: .375rem .75rem; font-size: .8125rem; cursor: pointer;
+}
+.btn-quiet:hover { color: var(--ink); border-color: var(--ink-faint); }
+
+/* The list of saved tickets. max-width because the title is the customer's
+   first message - one long ticket would otherwise stretch the whole header. */
+select.btn-quiet { max-width: 16rem; }
+
+.btn-plain {
+  background: none; border: 0; padding: 0; cursor: pointer;
+  color: var(--ink-faint); font-size: .8125rem;
+  text-decoration: underline; text-underline-offset: 3px;
+}
+.btn-plain:hover { color: var(--ink); }
+
+/* --- notices from the checks ----------------------------------------------
+
+   The colours come from --danger and --waiting, which the page already has in
+   both themes. Introducing its own would mean maintaining two sets of the
+   same thing.                                                              */
+
+#notices { display: flex; flex-direction: column; gap: .5rem; }
+#notices:empty { display: none; }
+
+.notice {
+  display: flex; gap: .625rem; align-items: baseline;
+  padding: .625rem .875rem; border-radius: 3px;
+  border: 1px solid var(--line); background: var(--surface);
+  font-size: .875rem; line-height: 1.5;
+}
+.notice b { font-weight: 600; }
+.notice code {
+  font: inherit; color: var(--ink-faint);
+}
+
+/* An escalation is not an error - it is the model deciding correctly, and it
+   wants noticing. Hence attention, not alarm. */
+.notice-escalate {
+  border-color: var(--waiting); color: var(--waiting);
+  background: transparent;
+}
+.notice-error   { border-color: var(--danger);  color: var(--danger); }
+.notice-warning { border-color: var(--line); color: var(--ink-soft); }
+
+.notice-mark { flex: 0 0 auto; }
+
+/* --- the result --------------------------------------------------------- */
+
+/* The message to the customer is why you opened this page. It gets the full
+   surface and an accented edge; the draft is only a review and holds back. */
+.review, .dispatch { display: flex; flex-direction: column; gap: .625rem; }
+
+.block-head {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 1rem;
+}
+
+.body-text { white-space: pre-wrap; }
+
+.review .body-text {
+  font: 400 .9375rem/1.65 var(--serif);
+  color: var(--ink-soft);
+  padding-left: .875rem;
+  border-left: 2px solid var(--line);
+}
+
+.dispatch .body-text {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-left: 2px solid var(--accent);
+  border-radius: 3px;
+  padding: 1rem 1.125rem;
+}
+
+/* The sources are a control, not output - hence small and muted. The links
+   stay clickable so a citation can be verified in one click. */
+.sources .body-text {
+  font: 400 .8125rem/1.7 var(--mono);
+  color: var(--ink-soft);
+  word-break: break-word;
+}
+.sources a { color: var(--accent); }
+
+.ticket-sk {
+  font: 400 .875rem/1.6 var(--serif);
+  color: var(--ink-soft);
+  white-space: pre-wrap;
+}
+
+.meta {
+  font: 400 .75rem/1.5 var(--mono);
+  color: var(--ink-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+.status { font-size: .875rem; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+.status[data-kind="error"]   { color: var(--danger); }
+.status[data-kind="waiting"] { color: var(--waiting); }
+
+.hint { font-size: .8125rem; color: var(--ink-faint); }
+
+.hidden { display: none !important; }
+
+/* The divide between what you type and what you get back. Without it the
+   result starts with the same weight as the form and the eye cannot tell
+   where the input ended. */
+#result {
+  border-top: 1px solid var(--line);
+  padding-top: 2.5rem;
+  animation: rise .28s ease-out;
+}
+@keyframes rise { from { opacity: 0; transform: translateY(4px); } }
+
+@media (prefers-reduced-motion: reduce) {
+  #result { animation: none; }
+}
+</style>
+</head>
+<body>
+
+<main class="page">
+
+  <header class="masthead">
+    <h1>Fyndit Support Helper</h1>
+    <p>Answers straight from the official documentation. It never
+      sends anything — you do.</p>
+  </header>
+
+
+  <section>
+    <div class="section-head">
+      <span class="eyebrow">Ticket</span>
+      <div class="row">
+        <select class="btn-quiet" id="historyPick" title="Reopen a saved ticket">
+          <option value="">Saved tickets…</option>
+        </select>
+        <button class="btn-quiet" id="newTicket">New ticket</button>
+        <button class="btn-plain" id="dropTicket" hidden>delete this one</button>
+        <a class="btn-plain" href="/logout">log out</a>
+      </div>
+    </div>
+
+    <div class="thread" id="thread"></div>
+
+    <div class="row">
+      <button class="btn-quiet" id="addCustomer">+ customer</button>
+      <button class="btn-quiet" id="addHelper">+ me</button>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <span class="eyebrow">My notes</span>
+      <span class="hint">optional</span>
+    </div>
+    <textarea id="draft" rows="2"
+      placeholder="If you already know the answer, jot it down — I will turn it into a proper reply."></textarea>
+    <p class="hint">When this is filled in, the documentation is not searched.</p>
+  </section>
+
+  <div class="row">
+    <button class="btn" id="send">Draft a reply</button>
+    <span class="status" id="status"></span>
+  </div>
+
+  <div id="result" class="hidden" style="display:flex; flex-direction:column; gap:2rem;">
+
+    <!-- The notices sit AT THE TOP, above the draft. A check you notice only
+         after copying the answer is useless. -->
+    <div id="notices"></div>
+
+    <section>
+      <div class="section-head"><span class="eyebrow">Ticket in Slovak</span></div>
+      <div class="ticket-sk" id="ticketSk"></div>
+    </section>
+
+    <section class="review">
+      <div class="block-head">
+        <span class="eyebrow">Draft to review</span>
+        <button class="btn-quiet" data-copy="proposal">Copy</button>
+      </div>
+      <div class="body-text" id="proposal"></div>
+    </section>
+
+    <section class="dispatch">
+      <div class="block-head">
+        <span class="eyebrow">To send to the customer</span>
+        <button class="btn" data-copy="dispatch">Copy</button>
+      </div>
+      <div class="body-text" id="dispatch"></div>
+      <p class="meta" id="meta"></p>
+    </section>
+
+    <section class="sources hidden" id="sourceBlock">
+      <div class="block-head"><span class="eyebrow">Where this came from</span></div>
+      <div class="body-text" id="sourceText"></div>
+    </section>
+
+  </div>
+
+</main>
+
+<script>
+const $ = (id) => document.getElementById(id);
+
+const ROLE_LABEL = { customer: "Customer", helper: "Me" };
+
+/* --- the thread --------------------------------------------------------- */
+
+function grow(area) {
+  area.style.height = "auto";
+  area.style.height = area.scrollHeight + "px";
+}
+
+function addTurn(role, text = "") {
+  const turn = document.createElement("div");
+  turn.className = "turn";
+  turn.dataset.role = role;
+
+  const head = document.createElement("div");
+  head.className = "turn-head";
+
+  const roleBtn = document.createElement("button");
+  roleBtn.className = "role";
+  roleBtn.type = "button";
+  roleBtn.textContent = ROLE_LABEL[role];
+  roleBtn.title = "Switch who wrote this";
+  roleBtn.onclick = () => {
+    const next = turn.dataset.role === "customer" ? "helper" : "customer";
+    turn.dataset.role = next;
+    roleBtn.textContent = ROLE_LABEL[next];
+  };
+
+  const drop = document.createElement("button");
+  drop.className = "drop";
+  drop.type = "button";
+  drop.textContent = "remove";
+  drop.onclick = () => {
+    if ($("thread").children.length > 1) turn.remove();
+  };
+
+  const area = document.createElement("textarea");
+  area.rows = 2;
+  area.value = text;
+  area.placeholder = role === "customer" ? "What the customer wrote…" : "What you replied…";
+  area.oninput = () => grow(area);
+
+  head.append(roleBtn, drop);
+  turn.append(head, area);
+  $("thread").append(turn);
+  area.focus();
+  grow(area);
+}
+
+function readThread() {
+  return [...$("thread").children]
+    .map(t => ({ role: t.dataset.role, text: t.querySelector("textarea").value.trim() }))
+    .filter(t => t.text);
+}
+
+$("addCustomer").onclick = () => addTurn("customer");
+$("addHelper").onclick = () => addTurn("helper");
+
+/* --- history --------------------------------------------------------------
+
+   The server keeps the tickets in one JSON file. The page only remembers the
+   id of the open ticket; "New ticket" deletes nothing - it simply stops
+   sending that id and the server creates a new record.                     */
+
+let conversationId = null;
+
+async function loadHistory() {
+  try {
+    const response = await fetch("/history", { credentials: "same-origin" });
+    if (!response.ok) return;
+    const items = await response.json();
+
+    const pick = $("historyPick");
+    pick.innerHTML = '<option value="">Saved tickets…</option>';
+    for (const item of items) {
+      const option = document.createElement("option");
+      option.value = item.id;
+      const when = new Date(item.updated_at).toLocaleDateString();
+      // The marker goes before the title so the list shows what is waiting on
+      // the owner.
+      const mark = item.escalate ? "⚠️ " : "";
+      option.textContent = `${mark}${when} — ${item.title}`;
+      pick.append(option);
+    }
+    pick.value = conversationId || "";
+  } catch { /* history is a convenience, not a feature - losing it stops nothing */ }
+}
+
+function newTicket() {
+  conversationId = null;
+  $("thread").innerHTML = "";
+  $("draft").value = "";
+  $("result").classList.add("hidden");
+  $("notices").innerHTML = "";
+  $("historyPick").value = "";
+  $("dropTicket").hidden = true;
+  status("");
+  addTurn("customer");
+}
+
+async function openTicket(id) {
+  if (!id) { newTicket(); return; }
+
+  const response = await fetch(`/history/${id}`, { credentials: "same-origin" });
+  if (!response.ok) { status("That ticket could not be opened.", "error"); return; }
+  const data = await response.json();
+
+  conversationId = data.id;
+  $("thread").innerHTML = "";
+  for (const message of data.thread) addTurn(message.role, message.text);
+  if (!data.thread.length) addTurn("customer");
+
+  /* The last answer is shown straight away - otherwise a reopened ticket would
+     look as if nothing had ever been done on it. */
+  const last = data.answers[data.answers.length - 1];
+  if (last) {
+    showAnswer(last.answer, last.ticket_sk, last.mode, "", last.regenerated);
+    showNotices(last.escalate, last.findings, last.regenerated, last.mode);
+  } else {
+    $("result").classList.add("hidden");
+  }
+
+  $("dropTicket").hidden = false;
+  status(`Reopened — ${data.answers.length} draft(s) so far.`);
+}
+
+$("newTicket").onclick = newTicket;
+$("historyPick").onchange = (event) => openTicket(event.target.value);
+
+$("dropTicket").onclick = async () => {
+  if (!conversationId) return;
+  await fetch(`/history/${conversationId}`, {
+    method: "DELETE", credentials: "same-origin",
+  });
+  newTicket();
+  loadHistory();
+};
+
+/* --- rendering the answer -------------------------------------------------
+
+   Pulled out of submit(), because the same thing is needed when a ticket is
+   reopened from the history. Duplicating it would mean fixing only one of the
+   two places next time.                                                    */
+
+/* Notices from the automatic checks (checks.py). They used to run only in the
+   evaluation - nothing checked the live tickets. */
+function showNotices(escalate, findings, regenerated, mode) {
+  const box = $("notices");
+  box.innerHTML = "";
+
+  if (escalate) {
+    // The marker means something DIFFERENT in each mode. In polish mode there
+    // is no documentation at all, so a sentence about it would be nonsense.
+    const text = mode === "polish"
+      ? "<b>Your notes do not cover part of this.</b> The model wrote what it could " +
+        "and flagged the rest for you — the marker stays in the draft, the customer " +
+        "never sees it."
+      : "<b>This one is a flagged gap.</b> The answer is not in the documentation — " +
+        "the marker is in the draft for you, not in the message to the customer.";
+    box.append(notice("escalate", "⚠️", text));
+  }
+
+  for (const f of findings || []) {
+    const kind = f.severity === "error" ? "error" : "warning";
+    // Once a rewrite has already happened and the error is back, it is not
+    // random variation. That is the moment worth interrupting a person for.
+    const again = regenerated && kind === "error"
+      ? "<b>Came back after a rewrite.</b> " : "";
+    box.append(notice(
+      kind, kind === "error" ? "✕" : "!",
+      `${again}${escapeHtml(f.detail)} <code>${escapeHtml(f.check)}</code>`
+    ));
+  }
+}
+
+function notice(kind, mark, html) {
+  const el = document.createElement("div");
+  el.className = `notice notice-${kind}`;
+  el.innerHTML = `<span class="notice-mark">${mark}</span><span>${html}</span>`;
+  return el;
+}
+
+/* Finding details come from the server but pass through innerHTML for the
+   highlighting - hence the escaping. */
+function escapeHtml(text) {
+  const d = document.createElement("div");
+  d.textContent = text ?? "";
+  return d.innerHTML;
+}
+
+function showAnswer(answer, ticketSk, mode, detail = "", regenerated = false) {
+  const { proposal, dispatch, source, problem } = splitAnswer(answer);
+  $("ticketSk").textContent = ticketSk || "Not translated.";
+  $("proposal").textContent = proposal;
+  $("dispatch").textContent = dispatch || "(the model returned no NA ODOSLANIE part)";
+  if (problem) status(problem, "error"); else status("");
+
+  // URLs are made clickable so a citation can be verified in one click. The
+  // rest of the text goes through textContent, so nothing is interpreted.
+  $("sourceText").textContent = source;
+  $("sourceText").innerHTML = $("sourceText").innerHTML.replace(
+    /(https?:\/\/[^\s<)\],;]+)/g,
+    '<a href="$1" target="_blank" rel="noopener">$1</a>'
+  );
+  $("sourceBlock").classList.toggle("hidden", !source || source.trim() === "—");
+
+  const origin = mode === "polish" ? "from your notes" : "from the documentation";
+  // A successful rewrite belongs in the metadata, not among the notices - the
+  // machine did its job and there is no reason to interrupt anyone over it.
+  const parts = [origin, detail, regenerated ? "rewritten once" : ""].filter(Boolean);
+  $("meta").textContent = parts.join(" · ");
+  $("result").classList.remove("hidden");
+}
+
+/* --- submitting --------------------------------------------------------- */
+
+function status(text, kind = "") {
+  $("status").textContent = text;
+  if (kind) $("status").dataset.kind = kind;
+  else $("status").removeAttribute("data-kind");
+}
+
+async function submit() {
+
+  const thread = readThread();
+  if (!thread.length) { status("The thread is empty.", "error"); return; }
+  if (thread[thread.length - 1].role !== "customer") {
+    status("The last message has to be from the customer — otherwise there is nothing to answer.", "error");
+    return;
+  }
+
+  $("send").disabled = true;
+  $("result").classList.add("hidden");
+
+  /* A free host puts the service to sleep after 15 minutes and the first call
+     then takes over a minute. Without a counter it looks like a frozen page. */
+  const started = Date.now();
+  const elapsed = () => Math.round((Date.now() - started) / 1000);
+  status("Working… 0 s");
+  const tick = setInterval(() => {
+    status(elapsed() > 20
+      ? `Working… ${elapsed()} s — the service is waking up, this is normal.`
+      : `Working… ${elapsed()} s`,
+      elapsed() > 20 ? "waiting" : "");
+  }, 1000);
+
+  try {
+    const draft = $("draft").value.trim();
+    const response = await fetch("/ask", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      // The session travels in a cookie, not a header - so nothing has to be
+      // typed on a phone.
+      credentials: "same-origin",
+      body: JSON.stringify({ thread, draft: draft || null, conversation_id: conversationId }),
+    });
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      status(response.status === 401
+        ? "Your session expired. Reload the page and log in again."
+        : `Error ${response.status}: ${data.detail || response.statusText}`, "error");
+      return;
+    }
+
+    conversationId = data.conversation_id || conversationId;
+    showNotices(data.escalate, data.findings, data.regenerated, data.mode);
+    // In polish mode the page count is zero and printing it makes no sense.
+    const pages = data.documents_used ? `${data.documents_used} pages · ` : "";
+    showAnswer(data.answer || "", data.ticket_sk, data.mode, `${pages}${elapsed()} s`, data.regenerated);
+    $("dropTicket").hidden = !conversationId;
+    loadHistory();
+  } catch (err) {
+    status("The server did not respond: " + err.message, "error");
+  } finally {
+    clearInterval(tick);
+    $("send").disabled = false;
+  }
+}
+
+$("send").onclick = submit;
+
+/* Ctrl/Cmd+Enter submits from anywhere - with dozens of tickets a day,
+   reaching for the mouse is wasted work. */
+document.addEventListener("keydown", (e) => {
+  if ((e.ctrlKey || e.metaKey) && e.key === "Enter") { e.preventDefault(); submit(); }
+});
+
+/* The model returns both parts in one text. When they cannot be split we show
+   everything in the draft - better than discarding an answer that already cost
+   a call. */
+function splitAnswer(answer) {
+  const mark = answer.match(/\*{0,2}\s*NA\s+ODOSLANIE\s*\*{0,2}/i);
+  if (!mark) return { proposal: answer.trim(), dispatch: "", source: "", problem: "" };
+
+  const before = answer.slice(0, mark.index);
+  let rest = answer.slice(mark.index + mark[0].length);
+
+  /* The same breakages the server reports in split_sections. Without this the
+     Copy button would hand the customer the message twice, heading included -
+     the evaluation would catch it, the person on the page would not. */
+  let problem = '';
+  if (/\*{0,2}\s*NA\s+ODOSLANIE\s*\*{0,2}/i.test(rest)) {
+    problem = 'The model returned the NA ODOSLANIE part twice — do not send it before checking.';
+  } else if (/ZDROJ/i.test(before)) {
+    problem = 'The model put ZDROJ before NA ODOSLANIE — the citations could not be verified.';
+  }
+
+  /* ZDROJ stands after NA ODOSLANIE and has to be cut off - otherwise the
+     citations would land in the clipboard together with the customer's
+     message. */
+  let source = "";
+  const src = rest.match(/\n\s*\*{0,2}\s*ZDROJ\s*\*{0,2}\s*\n/i);
+  if (src) {
+    source = rest.slice(src.index + src[0].length).trim();
+    rest = rest.slice(0, src.index);
+  }
+
+  const head = before.match(/\*{0,2}\s*N[ÁA]VRH[^\n]*\*{0,2}/i);
+  const proposal = head ? before.slice(head.index + head[0].length) : before;
+
+  return {
+    proposal: proposal.trim().replace(/^[-*\s]+|[-*\s]+$/g, ""),
+    dispatch: rest.trim(),
+    source,
+    problem,
+  };
+}
+
+/* --- copying ------------------------------------------------------------ */
+
+document.querySelectorAll("[data-copy]").forEach(btn => {
+  btn.onclick = async () => {
+    await navigator.clipboard.writeText($(btn.dataset.copy).textContent);
+    const was = btn.textContent;
+    btn.textContent = "Copied";
+    setTimeout(() => { btn.textContent = was; }, 1400);
+  };
+});
+
+/* --- start -------------------------------------------------------------- */
+
+addTurn("customer");
+loadHistory();
+</script>
+</body>
+</html>

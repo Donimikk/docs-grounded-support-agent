@@ -1,0 +1,30 @@
+# Secrets / environment
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+
+# Editors / OS
+.vscode/*
+!.vscode/launch.json
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Eval results - regenerated on every run, they do not belong in the repo.
+# run_eval.py relies on this: it writes the prompt of each run to
+# data/eval/prompts/ instead, precisely because that directory is kept.
+data/eval/results/
+
+# Ticket history - written by the app at runtime from real messages.
+data/history/

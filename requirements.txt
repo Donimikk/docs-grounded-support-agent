@@ -1,0 +1,24 @@
+# Versions are PINNED with ==, not >=.
+#
+# Reason: every run stores a fingerprint of the prompt and a fingerprint of the
+# code, so that two runs can be compared. Unpinned libraries destroy that
+# meaning - a deployment a month later would quietly produce the same numbers
+# from different code. The most sensitive one is langdetect: our MIN_CHARS and
+# MIN_CONFIDENCE thresholds are measured against its behaviour, and changing it
+# would shift them without anything announcing it.
+#
+# Raising a version is a deliberate act: change the number, run the tests and
+# the eval, compare.
+
+# Needed to run the app
+fastapi==0.141.1
+uvicorn[standard]==0.52.1
+httpx==0.28.1
+python-dotenv==1.2.2
+
+# Needed only for the tests and the eval, not to run the app. They are here
+# anyway so that 'pip install -r requirements.txt && pytest' works on a clean
+# machine. Render installs them needlessly, but they are small - a separate dev
+# file would be more work than it is worth.
+pytest==9.1.1
+langdetect==1.0.9

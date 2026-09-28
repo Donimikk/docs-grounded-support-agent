@@ -1,0 +1,59 @@
+# Deployment on Render.
+#
+# The docs ship together with the code (data/docs/en/), so the app needs no
+# database and makes no network call at startup.
+#
+# Keys are NOT written here. sync: false means you fill the value in by hand
+# in the Render dashboard and it never reaches the repository.
+
+services:
+  - type: web
+    name: fyndit-support-helper
+    runtime: python
+    plan: free
+
+    buildCommand: pip install -r requirements.txt
+    # --forwarded-allow-ips='*' is not cosmetic. Render terminates HTTPS on its
+    # own proxy and forwards X-Forwarded-Proto, but by default uvicorn accepts
+    # that header ONLY from 127.0.0.1 - and the proxy has a different address.
+    # Without this, request.url.scheme stays 'http' even though the person is
+    # on HTTPS, and the login cookie is set WITHOUT the Secure flag (api.py
+    # ties the flag to the scheme).
+    startCommand: uvicorn fyndit_helper.api:app --host 0.0.0.0 --port $PORT --app-dir src --forwarded-allow-ips='*'
+
+    healthCheckPath: /health
+
+    envVars:
+      # Render may not have the newest Python. If the build fails on the
+      # version, lower this number - the project requires 3.11 or higher.
+      - key: PYTHON_VERSION
+        value: "3.13"
+
+      # Which provider and model the deployment runs on. Any provider from
+      # PROVIDERS in src/fyndit_helper/providers.py can go here; the endpoint
+      # code does not change with it.
+      - key: LLM_PROVIDER
+        value: smartapi
+
+      - key: SMARTAPI_MODEL
+        value: gpt-5.6-luna
+
+      # Fill in by hand in the dashboard: Environment -> Add Environment Variable
+      - key: SMARTAPI_API_KEY
+        sync: false
+
+      # The key that guards /ask. Without it the app starts, but /ask returns
+      # 503 - deliberately. A public URL with no lock would mean anyone who
+      # finds it can spend the operator's credit at the provider.
+      # Generate: python -c "import secrets; print(secrets.token_urlsafe(32))"
+      - key: API_KEY
+        sync: false
+
+      # The password for the page itself. It is entered once in the browser and
+      # held in a cookie, so the API key does not have to be typed on a phone.
+      #
+      # Without it the page starts but lets nobody in - deliberately, the same
+      # way as API_KEY. Changing this value logs out every device immediately;
+      # that is the only way to take access away, because there are no accounts.
+      - key: APP_PASSWORD
+        sync: false

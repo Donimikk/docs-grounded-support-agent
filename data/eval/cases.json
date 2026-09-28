@@ -1,0 +1,672 @@
+{
+  "_comment": [
+    "Evaluation set for Stage 2. Taken from real tickets and anonymised.",
+    "",
+    "expects='answer' - the answer IS in the documentation, the model has to find it",
+    "expects='gap'    - the answer is NOT in the documentation, the model has to say",
+    "                   '⚠️ Toto v docs nie je.' and must NOT invent either a",
+    "                   positive or a negative conclusion",
+    "",
+    "RULE 1: no case may overlap with the examples in prompts/system_prompt.md.",
+    "That is why there is no question about size filtering here - the model has that",
+    "one straight in the prompt.",
+    "",
+    "RULE 2: expects='gap' must NOT be decided by what the person answered in the",
+    "ticket. The owner often answers off the top of his head even when the answer IS",
+    "in the docs. Every case with expects='gap' must carry a 'verified_absent' field",
+    "with a concrete grep proving it really is not in the docs. Without it the test",
+    "does not pass.",
+    "",
+    "This rule came out of finding that THREE of my five 'gaps' did have an answer in",
+    "the documentation - just in a different file than the one I searched. All of",
+    "those model 'failures' were in fact mistakes in this set."
+  ],
+  "cases": [
+    {
+      "id": "autocop-unclear-checkout",
+      "question": "Purchase failed: Vinted returned an unclear checkout error. What does this mean? I'm buying Spain to Spain.",
+      "language": "en",
+      "expects": "answer",
+      "must_mention": [
+        "region",
+        "manual"
+      ],
+      "source": "real ticket, autocop dynamic error",
+      "note": "docs_autocop.md: the usual cause is that the item cannot be delivered to the session's region"
+    },
+    {
+      "id": "autocop-payment-method",
+      "question": "My autocop says 'Payment method is not available'. I have a card added, what's wrong?",
+      "language": "en",
+      "expects": "answer",
+      "must_mention": [
+        "manual",
+        "first"
+      ],
+      "source": "docs_autocop.md - Troubleshooting",
+      "note": "Vinted requires the first purchase to be made by hand; autocop works after that"
+    },
+    {
+      "id": "autocop-access-denied",
+      "question": "autocop keeps failing with 'Access denied', did I get banned?",
+      "language": "en",
+      "expects": "answer",
+      "must_mention": [
+        "24"
+      ],
+      "source": "docs_autocop.md - Troubleshooting",
+      "note": "the docs describe a temporary restriction of about 24 hours, not a ban"
+    },
+    {
+      "id": "monitor-no-results",
+      "question": "Perché non appaiono prodotti nonostante io abbia creato tutto il setup del monitor?",
+      "language": "it",
+      "expects": "answer",
+      "must_mention": [
+        "Test Item"
+      ],
+      "source": "real ticket",
+      "note": "RECLASSIFIED from 'gap' to 'answer'. I had labelled it by what the owner replied (the bot reads search text differently from Vinted) - but docs_monitors.md line 104 has exactly this question under Troubleshooting: monitor active, session verified, Test Item against strict filters. The model answered correctly, the mistake was in my label. The observation about search text is still a candidate for data/knowledge/."
+    },
+    {
+      "id": "does-it-cost-money",
+      "question": "Una pregunta, cuesta dinero usar el bot?",
+      "language": "es",
+      "expects": "answer",
+      "must_mention": [
+        "free|gratis|gratuito|gratuit|zadarmo|bezplatn",
+        "monitor"
+      ],
+      "source": "real ticket",
+      "note": "The Free tier limits ARE in docs_premium-limits.md. The actual AMOUNTS are not - if the model states them, it is inventing. It doubles as a test of the promo code: the person asking is new, so the code should come up. | must_mention fixed: the ticket is in Spanish, so the message to the customer is Spanish too and the English 'Free' will never appear in it. The model answered correctly."
+    },
+    {
+      "id": "pro-plan-price",
+      "question": "How much does the Pro plan cost per month?",
+      "language": "en",
+      "expects": "answer",
+      "source": "own test",
+      "note": "home_pricing.md: Pro at 79,90 EUR per month. It used to be a gap - the price list is a section of the home page, not /docs.",
+      "must_mention": [
+        "79"
+      ]
+    },
+    {
+      "id": "supported-domains",
+      "question": "Does Fyndit support vinted.sk? I'm from Slovakia.",
+      "language": "en",
+      "expects": "answer",
+      "must_mention": [
+        "sk"
+      ],
+      "source": "own test",
+      "note": "RECLASSIFIED from 'gap' to 'answer'. The 'Supported Vinted Domains' section in docs.md really is incomplete, but docs_regions.md line 44 contains '| Slovakia (sk) | cz, pl |'. The model answered straight from that line - it found it in a different file than the one I was looking in. That was my mistake, not its."
+    },
+    {
+      "id": "monitor-link-unavailable",
+      "question": "when i go to create a monitor and paste my vinted link it says unavailable. the link is from vinted.com with GBP prices",
+      "language": "en",
+      "expects": "answer",
+      "source": "real ticket",
+      "note": "RECLASSIFIED from 'gap' to 'answer'. It stopped being a gap the moment the note poznamky:invalid-monitor-link was added - it covers exactly this case. The model answered correctly and cited it; the evaluation punished it for correct behaviour because I had not fixed the label. LESSON: every new note can turn a gap into an answer.",
+      "must_mention": [
+        "domain|domén|doména"
+      ]
+    },
+    {
+      "id": "3ds-nothing-happens",
+      "question": "I click on the 3DS confirmation but nothing shows up and I cannot pay",
+      "language": "en",
+      "expects": "gap",
+      "verified_absent": "grep -in 'nothing|blank|does not open' docs_3ds.md -> no result",
+      "source": "real ticket",
+      "note": "RECLASSIFIED. I had originally marked it 'answer' and required the word 'timeout' - that was wrong. docs_3ds.md describes the Verify 3DS button, the countdown and what happens when the limit expires, but it does NOT describe the case where nothing appears after the click. In the ticket the owner replied 'which bank do you use?' - so he did not have the answer in the docs either. The model said it was not in the docs and it was right; my test failed, not the model."
+    },
+    {
+      "id": "downgrade-monitors",
+      "question": "What happens to my monitors if my subscription gets downgraded from Plus to Free?",
+      "language": "en",
+      "expects": "answer",
+      "must_mention": [
+        "archiv"
+      ],
+      "source": "own test",
+      "note": "docs_premium-limits.md - What Happens on Downgrade"
+    },
+    {
+      "id": "dashboard-not-visible",
+      "question": "Ciao, ho comprato il piano Plus ma non vedo il dashboard. Cosa devo fare?",
+      "language": "it",
+      "expects": "answer",
+      "must_mention": [
+        "Discord"
+      ],
+      "source": "own test",
+      "note": "A language test: the NÁVRH has to be in Slovak, NA ODOSLANIE in Italian."
+    },
+    {
+      "id": "two-monitors-separately",
+      "question": "Hi, I've made two monitors, how do I view them separately",
+      "language": "en",
+      "expects": "answer",
+      "must_mention": [
+        "feed colo|farb|group|skupin"
+      ],
+      "source": "real ticket",
+      "note": "Tests whether the model searches the WHOLE corpus or settles for the nearest page. The question sounds like monitors, so docs_monitors.md is the first call - but the answer is in docs_item-notifications.md under 'Feed Colors', which literally says 'one color for a second monitor setup you want to keep separate'. On my own first reading I looked only in docs_monitors.md and recommended webhooks, which are Pro only - I would have sent the customer to pay for something feed colours already solve. The question is also ambiguous (view the settings vs. separate the alerts), so a good answer should cover both readings. | must_mention relaxed: the docs spell 'feed colors' the American way and the model may write 'colours'. It was failing on spelling, not on substance. | must_mention widened: 'how do I view them separately' can be read two ways - separate alerts (feed colours) or separately in the Dashboard (groups/monitors). Both are correct, and the second was made answerable by the note dashboard-navigation."
+    },
+    {
+      "id": "refund-missed-item",
+      "question": "The bot missed an item I really wanted. Can I get a refund for this month?",
+      "language": "en",
+      "expects": "gap",
+      "source": "added to the set, a realistic question from an unhappy subscriber",
+      "note": "cgv.md par. 12 'Refunds and goodwill': a period already started is non-refundable outside withdrawal, statutory guarantees, a double payment and an outage on Fyndit's side. It used to be a gap - the Terms of Sale sit outside /docs. | FIXED: I had required the word 'non-refundable', which does NOT occur in the corpus. cgv.md:62 says it as 'does not generate a pro-rata refund for a period already started'. I was requiring a wording I had invented myself. | RECLASSIFIED to 'gap'. The model did NOT fail - it escalated obediently, exactly as the prompt says. My label failed: I had written it by asking 'is this in the corpus?' instead of 'what should the helper do?'. With compensation, policy beats the availability of the information. CAREFUL: do not flip it back to 'answer' - that would require the model to judge the customer's refund claim itself.",
+      "verified_absent": "This is NOT an information gap - cgv.md par. 12 answers the question. It is a POLICY escalation: the prompt forbids judging compensation requests ('goes to the owner untouched - you do not evaluate whether they deserve it'). A refund request goes to the operator no matter what the corpus says."
+    },
+    {
+      "id": "mobile-app",
+      "question": "Is there a mobile app for Fyndit or is it Discord only?",
+      "language": "en",
+      "expects": "answer",
+      "source": "added to the set",
+      "note": "home_faq.md: 'Fyndit lives right inside Discord: no separate app to install'. It was marked as a gap for a while - the grep looked for 'mobile app|ios|android' and the corpus says it in different words. The lesson: do not verify a gap by grepping for keywords, verify it by topic.",
+      "must_mention": [
+        "Discord"
+      ]
+    },
+    {
+      "id": "privacy-policy",
+      "question": "What exactly do you do with my Vinted account data? Do you have a privacy policy?",
+      "language": "en",
+      "expects": "answer",
+      "source": "added to the set",
+      "note": "confidentialite.md: GDPR rights, retention, the contact for deletion. It used to be a gap - the page sits outside /docs. | MEASURED (--repeat 5): FLAKY, 3/5. Historically it failed in 5 runs out of 19, so it was already flaky BEFORE the rule about refunds - that rule is not the culprit.\n\nThe difference between OK and BAD is not cosmetic: on the failures the model says the customer HAS rights, but not how to exercise them. Once it sent them to #🧐-documentation, even though the Privacy Policy is on the web and deletion needs an email. must_mention is therefore justified - it asks for the single actionable thing.\n\nHYPOTHESIS (unverified, do not act on it without measuring): the prompt has a rule 'Point to a resource at the end... the right channel', which may pull the model towards a channel even where the right source is an email address. Verify with --repeat 5, not with a whole run.",
+      "must_mention": [
+        "contact@fyndit.app"
+      ]
+    },
+    {
+      "id": "second-discord-account",
+      "question": "Can I use my Plus subscription on a second Discord account as well?",
+      "language": "en",
+      "expects": "answer",
+      "source": "added to the set",
+      "note": "CLOSED. The case was flipped twice (answer -> gap). The helper confirmed the rule: one subscription is always one account; it can be transferred, but the Plus role ends on the first account when it is. Written into the note subscription-account-binding, so it is no longer a gap - the answer is available and does not have to be inferred.\n\nThe model had already been answering correctly and citing cgu.md (accounts are personal, transferring access without written permission is prohibited) - it was only missing the explicit point about the role ending on the first account.",
+      "must_mention": [
+        "transfer|move|presun|prenes|prenies|one account|jeden"
+      ]
+    },
+    {
+      "id": "whitelist-vs-blacklist",
+      "question": "What is the difference between whitelist and blacklist?",
+      "language": "en",
+      "expects": "answer",
+      "must_mention": [
+        "whitelist",
+        "blacklist"
+      ],
+      "source": "own test",
+      "note": "docs_filters.md. The model once invented the ORDER in which the filters are applied - that is not in the docs."
+    },
+    {
+      "id": "language-english-reply",
+      "question": "Hi, I've made two monitors, how do I view them separately",
+      "language": "en",
+      "expects": "answer",
+      "must_mention": [
+        "feed colo|farb|group|skupin"
+      ],
+      "note": "A real production failure: the model was given the ticket together with its Slovak translation and wrote BOTH parts in Slovak, word for word the same. The customer would have received a message they cannot read. The 'wrong_language_for_customer' check catches it now. CAREFUL: with --skip-translation this case does NOT expose the bug, because without a translation there is nothing to copy. | must_mention relaxed, the same reason as two-monitors-separately. | FIXED: must_mention had stayed narrow ('feed colo|farb') even though I had relaxed it on the sibling case long before. It was also FACTUALLY WRONG: the feed colour is set on a GROUP (docs_dashboard.md:38), so it will not give two monitors inside one group separate feeds. The model answered through Monitors -> Select a monitor + Create Group, which is more precise than my label."
+    },
+    {
+      "id": "australia-supported",
+      "question": "Is that possible to use for Australia or na",
+      "language": "en",
+      "expects": "gap",
+      "verified_absent": "docs_regions.md has a table of supported domains; outside the EU it lists only United Kingdom (uk) and United States (us). 'australia' does not occur anywhere in the corpus (the single hit is in confidentialite.md, in a different context).",
+      "source": "real ticket",
+      "note": "the owner replied 'Yeah it's possible ofc'. THIS IS THE KEY CASE: absence from the table is NOT proof that something cannot be done. The model must not say 'Australia is not supported' - that is exactly the mistake it made on supported-domains, only the other way round."
+    },
+    {
+      "id": "weekly-trial-plan",
+      "question": "Is possible for a week plan to test it? I would pay, I just wanted to get a little preview of what im gonna get",
+      "language": "en",
+      "expects": "gap",
+      "verified_absent": "home_pricing.md knows only Free / Plus at 12,90 EUR per month / Pro at 79,90 EUR per month. The words 'trial', 'weekly' and 'per week' do not occur in the corpus in the sense of a plan.",
+      "source": "real ticket",
+      "note": "the helper replied 'That ain't an official plan, but maybe the owner can do that for you'. The right behaviour: admit the gap and pass it to the operator, not invent a price."
+    },
+    {
+      "id": "legacy-bot-regex",
+      "question": "I set up a regex blacklist on my monitor but it keeps getting flagged as an error. the owner told me regex is supported. Im on the legacy bot",
+      "language": "en",
+      "expects": "gap",
+      "verified_absent": "the word 'legacy' does not occur ANYWHERE in the corpus (38 pages). The docs describe one bot; that there is an old one and a new one with different regex support is not in them.",
+      "source": "real ticket",
+      "note": "THE MOST IMPORTANT FINDING FROM THE TICKETS. Reality has two bots, the documentation has one. The helper only worked it out by trying. Material for a second layer of knowledge."
+    },
+    {
+      "id": "regex-and-operator",
+      "question": "Is there a syntax or operator to enforce a logical AND between whitelist keywords? Commas act as OR but I need a match only if all words are present",
+      "language": "en",
+      "expects": "gap",
+      "verified_absent": "docs_filters.md 'Regex Basics (Quick)' describes only /a|b/ (OR), /^x/ and /x/. No AND, no lookahead, no mention of combining conditions.",
+      "source": "real ticket",
+      "note": "The helper solved it with a ChatGPT lookahead. The model MUST NOT claim that lookahead is officially supported - that is not in the docs."
+    },
+    {
+      "id": "wrong-pickup-point",
+      "question": "why do all of my orders have the wrong pickup point selected? I have my favourite location set on the bot but the wrong one is chosen every time",
+      "language": "en",
+      "expects": "answer",
+      "source": "real ticket",
+      "note": "RECLASSIFIED from 'gap' to 'answer'. docs_sessions.md:75 'Pickup Strategy and Radius' describes exactly this: Favorite / 'Favorite -> Cheapest fallback' / 'Closest & Cheapest'. When a strategy other than Favorite is selected, the bot picks a different point - that is the answer. MY MISTAKE: when verifying I had a 'head -6' in the grep, which cut off precisely this line. It was failing 7/7 models, because ALL of them answered correctly.",
+      "must_mention": [
+        "favorite|favourite|obľúb|prefer"
+      ]
+    },
+    {
+      "id": "private-channel-setup",
+      "question": "how do i create a private channel. i cant seem to do it and access the bot from inside my private channel",
+      "language": "en",
+      "expects": "gap",
+      "source": "real ticket",
+      "note": "RECLASSIFIED from 'answer' to 'gap' - my fourth mistake of the same kind. I had labelled it by the FILE NAME without reading the content. The model raised the marker correctly and the evaluation punished it for that. NOTE: two videos in videos.json cover this topic, so the correct answer is to admit the gap AND link the video.\n\nRECLASSIFIED to 'answer' on the decision that a tutorial video COUNTS as documentation. When a video covers the topic it is not a gap and the marker does not belong there.\n\nAn important limit to that same decision: the model MUST NOT send only a video when it can also describe the thing in words. A video is always a bonus, never a replacement - most of all when something is hard to put in words (moving around somebody else's interface). Hence must_mention on the video AND must_mention_sent on the verbal description: a bare link does not pass the case.\n\nRETURNED TO 'gap'. The reclassification was MY MISTAKE and the original note was right: 'the correct answer is to admit the gap AND link the video'. What I did wrong: I applied the decision about videos to the WHOLE question. But the customer asks two things - how to create a private channel (the video covers that) and whether the bot can be operated inside it (nowhere). I only looked at the first half.\n\nMeasured: 0/3, always with the same complaint. It was not model instability - the model answered correctly three times in a row and the label punished it three times.\n\nmust_mention_sent is here so the marker cannot bring down the part we can answer - the video link has to reach the customer.\n\nAN ATTEMPT TO RECLASSIFY to 'answer' AND ITS REFUTATION. The argument was that the note 'dashboard-map' covers the second half of the question as well, so the marker no longer belongs. It rested on a single run.\n\nIt was refuted by a five-run repeat: in 4 of 5 runs the model raised the marker and named exactly the missing thing - 'whether and how the bot can be operated directly in a private channel'. dashboard-map says WHERE the bot is operated; that it cannot be operated from your own channel is said nowhere, and the prompt forbids inferring non-existence from something being absent from the docs.\n\nIn numbers: as 'gap' the case passes 4/5, as 'answer' 1/5. The single run the original argument rested on was the minority.\n\nThe lesson for the next attempt: a label is about what is in the corpus, not about how the model most often behaves - but one run is not enough to decide either way.",
+      "verified_absent": "grep -rniE 'private channel|own channel|your channel|add the bot|invite the bot' data/docs/en/ -> the only hit is docs_support.md:15 and it is about something else (support moving the conversation into private). Control question: grep -rlni 'channel' data/docs/en/ | wc -l -> 11, so the grep works. Whether the bot can be used inside your own channel is not in the corpus.",
+      "must_mention": [
+        "youtu|video"
+      ],
+      "must_mention_sent": [
+        "youtu|video"
+      ],
+      "overlap_ok": "VERIFIED. The topic of creating a channel is covered by the video gCrcTbuaxWw, so the FIRST half of the question is not a gap. The second - whether the bot can be operated from your own channel - is, and the marker belongs to that half."
+    },
+    {
+      "id": "publish-my-items",
+      "question": "come posso pubblicare i miei prodotti? voglio vendere in modo piu veloce",
+      "language": "it",
+      "expects": "answer",
+      "must_mention": [
+        "vinted"
+      ],
+      "source": "real ticket",
+      "note": "FIXED. I originally claimed the customer had the wrong idea and that Fyndit does not publish listings. THAT IS NOT TRUE: docs_promote.md describes Wardrobe -> Promote, publishing into a community channel for 3 promotion points. The question is answerable and must_mention 'monitor' made no sense.\n\nREWRITTEN. The earlier label required the model to mention Promote. That was wrong and it was MY error, not the model's: Promote only collects a button for promoting listings that are already up on Vinted (docs_promote.md, troubleshooting: 'Wardrobe is empty - list items on Vinted first'), and on top of that the feature does not work and nobody uses it. So for 'how do I publish my products', Promote is NOT the answer.\n\nAfter the note 'bot-is-for-buying' was added the model answered correctly - that Fyndit is for watching and buying and the products have to be uploaded on Vinted itself - and the evaluation punished it for that. So the requirement was turned around: Promote must NOT be offered here.",
+      "must_not_mention": [
+        "promote|promuover|promozion"
+      ]
+    },
+    {
+      "id": "thread-monitors-not-visible",
+      "thread": [
+        {
+          "role": "customer",
+          "text": "Where do I see my monitors"
+        },
+        {
+          "role": "helper",
+          "text": "You use the bot in the dashboard channel."
+        },
+        {
+          "role": "customer",
+          "text": "I dont get it. In the video we see a separate chat with all the products corresponding to our criteria. I dont have this"
+        }
+      ],
+      "language": "en",
+      "expects": "answer",
+      "must_mention": [
+        "monitor"
+      ],
+      "source": "real ticket",
+      "note": "A THREAD. The owner ended up asking 'Did you create a monitor already?' - and that was the right move, because the customer probably has no monitor and therefore no feed either. The model must NOT repeat what the helper has already said (the dashboard channel); it should ask back, or explain that the feed only appears once there is a monitor."
+    },
+    {
+      "id": "thread-subscription-questions",
+      "thread": [
+        {
+          "role": "customer",
+          "text": "I want to know some things about the 80 euro plan"
+        },
+        {
+          "role": "helper",
+          "text": "Sure, ask away."
+        },
+        {
+          "role": "customer",
+          "text": "whats the success rate if 80 people are trying to buy the same item with the same bot"
+        }
+      ],
+      "language": "en",
+      "expects": "answer",
+      "source": "real ticket",
+      "note": "A THREAD PLUS A GAP. The helper answered from experience: 'if 2 people same bot its coin flip'. That is real knowledge, but it is not in the docs. The model should admit the gap rather than invent a percentage - a success-rate number is exactly what a customer believes and later complains about. | RECLASSIFIED to 'answer'. The label aged the moment I wrote the note delivery-speed: it says literally that with the same setup everyone is on the same level and the chance is split between everyone who tries for an item. That IS an answer to the question - not a number, but a substantive one.\n\nThe model answered exactly right: it refused to invent a percentage, said there is no guaranteed success rate, and cited the note. I was punishing it for correct behaviour.\n\nNOTE: must_mention deliberately contains NO number. The 'do not invent a percentage' check stays - a success-rate number is what a customer believes and later complains about. | The content about the chance moved from delivery-speed into the new note autocop-win-chance; delivery-speed is now only about speed. A --repeat 5 measurement showed the same mistake 4 times out of 5: the model promised the customer it would find out 'the exact success rate'. No such number exists - verified online too, not even competitors publish one. The new note says so explicitly.",
+      "must_mention": [
+        "split|delí|deli|rozdel|equal|rovnak|no guarantee|ziadna garancia|žiadna garancia"
+      ]
+    },
+    {
+      "id": "thread-regex-second-monitor",
+      "thread": [
+        {
+          "role": "customer",
+          "text": "Is there a way to require ALL keywords to match, not just one?"
+        },
+        {
+          "role": "helper",
+          "text": "You can try a regex with lookaheads, that should work."
+        },
+        {
+          "role": "customer",
+          "text": "It works on my first monitor but when I put the exact same pattern on a second monitor it matches every single listing instead. Same category, same string. Is there a limit of one regex monitor per account?"
+        }
+      ],
+      "language": "en",
+      "expects": "gap",
+      "verified_absent": "docs_filters.md describes regex only at the level of /a|b/, /^x/, /x/. No limit on the number of monitors with regex, no known parser bug, no 'fail-open' behaviour.",
+      "source": "real ticket",
+      "note": "A THREAD PLUS A GAP. This is a bug report, not a documentation question. The model must neither confirm nor deny that the limit exists - it has to admit that this is not in the docs and pass it to the operator."
+    },
+    {
+      "id": "no-item-feed-dms",
+      "thread": [
+        {
+          "role": "customer",
+          "text": "Where do I see my monitors"
+        },
+        {
+          "role": "helper",
+          "text": "You use the bot in the dashboard channel."
+        },
+        {
+          "role": "customer",
+          "text": "I don't have this that we can see in the tutorial video. The thing is I'm not receiving any items at all"
+        }
+      ],
+      "language": "en",
+      "expects": "answer",
+      "must_mention": [
+        "dm|direct message|súkrom|privacy"
+      ],
+      "source": "real ticket",
+      "note": "THE MOST VALUABLE CASE IN THE SET. The owner spent TWO DAYS on it and ended up giving the customer a free month as an apology. The fix was: Discord > Privacy > Enable DMs. And it is in docs.md:90 word for word - 'No notifications received - Check that your Discord DM privacy settings allow messages from server members'. Exactly what this tool is for."
+    },
+    {
+      "id": "multiple-devices",
+      "question": "Can I use the Fyndit buy button from multiple devices (Mac, phone, PC) all logged into the same Discord account, or is there a device limit that could get my account restricted?",
+      "language": "en",
+      "expects": "gap",
+      "verified_absent": "searched 'multiple devices|device limit|logged in.*device|concurrent' -> 0 matches in the whole corpus (the control question 'monitor' gave 127, so the pattern is fine). The docs do not cover the number of devices or simultaneous logins.",
+      "source": "real ticket",
+      "note": "the helper replied 'Yup, it's same discord account'. That does not follow from the docs.",
+      "overlap_ok": "VERIFIED: the delivery-speed note mentions 'device' in connection with Apple Pay and 'multiple accounts' in connection with Vinted accounts - neither is about the number of devices at the Buy button, nor about a limit on simultaneous logins. It is still a gap."
+    },
+    {
+      "id": "custom-step-before-autobuy",
+      "question": "Ik wil boeken resellen. Is het mogelijk om tussen het detecteren van een advertentie en het automatisch kopen een eigen stap in te bouwen, waarbij ik via een externe website de waarde en marge bepaal?",
+      "language": "nl",
+      "expects": "gap",
+      "verified_absent": "there is no mention in the corpus of a custom step, an external call, a script or an API between detection and purchase. The only hit on 'api' is a company name in confidentialite.md. Webhooks only send items to another Discord.",
+      "source": "real ticket",
+      "note": "The first Dutch case. The helper answered at length and to the point, but out of his own head. The model should admit the gap and pass it to the operator, not propose an architecture."
+    },
+    {
+      "id": "free-cant-click-buy",
+      "question": "How can i buy something i cant click anything",
+      "language": "en",
+      "expects": "answer",
+      "must_mention": [
+        "plus|pro"
+      ],
+      "source": "real ticket",
+      "note": "home_pricing.md:21 'Manual actions - Quick actions for buying, making an offer, or favouriting an item | no | yes | yes' and tutoriels_channel-free.md:17 'No actions from Discord (buy, offer, favorite are reserved for paid plans)'. NOTE: the owner replied that 'the most valuable items are hidden' - that is something ELSE. docs_item-notifications.md:84 'Hidden Items' are items flagged by Vinted, not a Free tier restriction. The model must not merge the two."
+    },
+    {
+      "id": "delete-monitor",
+      "question": "okay I did it, how can I delete a monitor?",
+      "language": "en",
+      "expects": "answer",
+      "must_mention": [
+        "delete|zmaz|vymaz|odstrán"
+      ],
+      "source": "real ticket",
+      "note": "docs_monitors.md:100 '**Delete** - Remove the monitor permanently.' and :98 Archive/Unarchive. NOTE to self: my first search for 'delete a monitor' gave 0 matches, because the docs only write 'Delete'. Only searching by topic found it - rule no. 4."
+    },
+    {
+      "id": "pickup-failed-after-token-renewal",
+      "question": "after I renewed the cookies of my 2 sessions, the system doesnt automatically apply any of my favorite pickup points anymore, even though they are selected in the bot. the bot is saying 'failed to apply favorite pickup point'",
+      "language": "en",
+      "expects": "answer",
+      "verified_absent": "searched 'failed to apply|renew.*cookie|cookie.*renew|refresh.*token' -> 8 matches, but ALL of them are about setting the refresh token in general (docs.md:55/63/89, docs_sessions.md:16/24/34/94/95). The error message 'failed to apply favorite pickup point' and its connection with renewing cookies are not in the corpus.",
+      "source": "real ticket",
+      "note": "A KNOWN BUG that the owner was fixing at the time of the ticket - the helper correctly wrote 'the owner is working on the fix'. The model must not propose a solution, it has to pass this to the operator.\n\nRECLASSIFIED from 'gap' to 'answer'. The label said the model must not propose a solution - but in the meantime the note 'pickup-point-name-clash' appeared, and it PRESCRIBES the procedure for this bug (delete all pickup points, set the location again, then pick the favourite). In a later run the model used it, cited it properly and still added at the end that if it does not help, the team will look into it. The label contradicted our own data.\n\nHow it slipped through: test_every_gap_case_is_still_a_gap is meant to catch exactly this, but the note is in Slovak and the question in English, so the word overlap did not bite - the hole its own docstring warns about. The test was tightened the same day.",
+      "overlap_ok": "VERIFIED: the notes dashboard-navigation and delivery-speed describe WHERE the favourite pickup point is set and how it affects speed. They do not explain the error message 'failed to apply favorite pickup point', nor its connection with renewing cookies. It is still a gap.",
+      "must_mention": [
+        "pickup|výdajn|vydajn"
+      ]
+    },
+    {
+      "id": "onboarding-brands-only",
+      "language": "en",
+      "expects": "answer",
+      "must_mention": [
+        "quick-tutorials|use-vinted-bot",
+        "url|link|odkaz"
+      ],
+      "source": "real ticket",
+      "note": "ONBOARDING - the most common kind of ticket there is, and for a long time we did not have a single case for it. The customer does not give enough information for a monitor (no category, no size, no price ceiling). The right answer is to point them somewhere, not to guess the settings: the tutorials for setting up, the bot channel for operating it, subscriptions for buying. The operator's real answer contains exactly those three plus the referral code. The model must not start inventing a concrete monitor setup - and 'Dio' is ambiguous on top of that (a brand? Dior? a typo?). | TURNED INTO A THREAD: in reality this is not the customer's question but an ANSWER to a question from our onboarding bot. The adapter now inserts it into the thread. Without it the model saw a bare fragment and asked 'what do you need help with' - repeating the very question the customer had just answered. | A requirement for the URL was added later. Comparing Gemini against luna on the Dutch ticket showed that luna gives only 'make a monitor and watch the videos', while Gemini gave concrete steps. That was not the model's fault - we had never scored anything for the steps, even though docs_monitors.md:31 describes them. We were measuring that it points at the channel, not that it sets the person up.",
+      "thread": [
+        {
+          "role": "helper",
+          "text": "Quick question: what are you hoping to do with a Vinted bot?"
+        },
+        {
+          "role": "customer",
+          "text": "Reselling, Ralph Lauren and Dio"
+        }
+      ],
+      "must_not_mention": [
+        "whitelabel|white label|white-label"
+      ]
+    },
+    {
+      "id": "onboarding-vague-everything",
+      "language": "fr",
+      "expects": "answer",
+      "must_mention": [
+        "quick-tutorials|use-vinted-bot",
+        "url|link|odkaz"
+      ],
+      "source": "real ticket",
+      "note": "ONBOARDING - the most common kind of ticket there is, and for a long time we did not have a single case for it. The customer does not give enough information for a monitor (no category, no size, no price ceiling). The right answer is to point them somewhere, not to guess the settings: the tutorials for setting up, the bot channel for operating it, subscriptions for buying. The operator's real answer contains exactly those three plus the referral code. The first French case. 'Everything from brands plus tech' cannot be watched with a single monitor - the model should send them to the tutorials, not pretend it can set that up. | TURNED INTO A THREAD: in reality this is not the customer's question but an ANSWER to a question from our onboarding bot. The adapter now inserts it into the thread. Without it the model saw a bare fragment and asked 'what do you need help with' - repeating the very question the customer had just answered. | A requirement for the URL was added later. Comparing Gemini against luna on the Dutch ticket showed that luna gives only 'make a monitor and watch the videos', while Gemini gave concrete steps. That was not the model's fault - we had never scored anything for the steps, even though docs_monitors.md:31 describes them. We were measuring that it points at the channel, not that it sets the person up.",
+      "thread": [
+        {
+          "role": "helper",
+          "text": "Petite question : qu'est-ce que tu veux faire avec un bot Vinted ?"
+        },
+        {
+          "role": "customer",
+          "text": "n'importe quoi mais plus des truc de marque genre nike raph lauren mais meme addidas et tout et la tech aussi genre pc carte graphique vêtement chaussure"
+        }
+      ],
+      "must_not_mention": [
+        "whitelabel|white label|white-label"
+      ]
+    },
+    {
+      "id": "onboarding-snipes",
+      "language": "en",
+      "expects": "answer",
+      "must_mention": [
+        "quick-tutorials|use-vinted-bot",
+        "url|link|odkaz"
+      ],
+      "source": "real ticket",
+      "note": "ONBOARDING - the most common kind of ticket there is, and for a long time we did not have a single case for it. The customer does not give enough information for a monitor (no category, no size, no price ceiling). The right answer is to point them somewhere, not to guess the settings: the tutorials for setting up, the bot channel for operating it, subscriptions for buying. The operator's real answer contains exactly those three plus the referral code. 'Snipes' means fast, good-value purchases. The model must not draw conclusions from that about which tier they need, if the docs do not say so. | TURNED INTO A THREAD: in reality this is not the customer's question but an ANSWER to a question from our onboarding bot. The adapter now inserts it into the thread. Without it the model saw a bare fragment and asked 'what do you need help with' - repeating the very question the customer had just answered. | A requirement for the URL was added later. Comparing Gemini against luna on the Dutch ticket showed that luna gives only 'make a monitor and watch the videos', while Gemini gave concrete steps. That was not the model's fault - we had never scored anything for the steps, even though docs_monitors.md:31 describes them. We were measuring that it points at the channel, not that it sets the person up.",
+      "thread": [
+        {
+          "role": "helper",
+          "text": "Quick question: what are you hoping to do with a Vinted bot?"
+        },
+        {
+          "role": "customer",
+          "text": "looking for oakley, g star, billabong etc snipes"
+        }
+      ],
+      "must_not_mention": [
+        "whitelabel|white label|white-label"
+      ]
+    },
+    {
+      "id": "always-second-buyer",
+      "question": "where i have my monitors everytime i have a hit and someone using this bot has it also im always second choice never the one first so its impossible its a coinflip, is there a plan that has a advantage or how is this happening",
+      "language": "en",
+      "expects": "answer",
+      "must_mention": [
+        "pro"
+      ],
+      "source": "real ticket (unanswered when it was added to the set)",
+      "note": "docs_subscription.md:18 and docs.md:43 state that Pro has 'priority autocop'. That is a partial answer: a plan with an advantage exists. The model MUST NOT fill in how much faster it is, nor guarantee an outcome - that is not in the docs."
+    },
+    {
+      "id": "refund-request",
+      "question": "Bonjour j'ai été prélevé de 43.98 par Whop pour Fyndit, qu'est-ce qui se passe ? Je voudrais être remboursé.",
+      "language": "fr",
+      "expects": "gap",
+      "verified_absent": "the docs do not cover specific charges to an account or the procedure for a payment complaint. cgv.md describes the rules of withdrawal in general, not 'why was I charged X euros'.",
+      "source": "real ticket",
+      "note": "TESTS THE RULE ABOUT COMPENSATION. The owner really did offer a refund or credits - the model must NOT offer that or even hint at it. It has to pass it to the operator."
+    },
+    {
+      "id": "white-label-price",
+      "question": "Salut, je voudrais le bot pour mes propres membres, en marque blanche. Vous proposez ça à combien ?",
+      "language": "fr",
+      "expects": "answer",
+      "source": "real ticket",
+      "note": "the owner answered 150 EUR per month. It is not in the docs - the model must not guess the price. | RECLASSIFIED to 'answer'. It stopped being a gap the moment the whitelabel note with the prices was added. Only the added consistency test caught it - the original heuristic compared words, and the notes are in Slovak, so it found nothing across the two languages.",
+      "must_mention": [
+        "150"
+      ]
+    },
+    {
+      "id": "reserve-item-15min",
+      "question": "Il piano Pro offre un metodo per bloccare l'articolo per 15 minuti così da poterlo visionare e decidere se pagare o no?",
+      "language": "it",
+      "expects": "answer",
+      "source": "real ticket",
+      "note": "FIXED (twice). Originally marked as a gap, with the claim that a 15-minute reservation exists - it does NOT, the owner was talking about 3DS.\n\nThe apparent contradiction with the docs was resolved by the helper: there are TWO timers. Vinted holds the item for 15 minutes during 3DS; Fyndit has its own short countdown (docs_3ds.md:17 'a few minutes'), after which the turn passes to the next in the queue.\n\nThe right answer: the pause is real and it comes from 3DS, not from a separate feature. The model must not claim that Fyndit has a reservation button.",
+      "must_mention": [
+        "3ds|3d secure|3-d secure|verifik|overen"
+      ]
+    },
+    {
+      "id": "vinted-account-blocked",
+      "question": "i created a second account for vinted, i bought some things but it already got blocked permanently. do you know how to prevent that from happening?",
+      "language": "en",
+      "expects": "answer",
+      "source": "real ticket",
+      "note": "RECLASSIFIED from 'gap' to 'answer'. It stopped being a gap on the same day the helper confirmed account warm-up and it was added to the delivery-speed note. The consistency test caught it, not me.",
+      "must_mention": [
+        "warm|zahri|zahrie"
+      ]
+    },
+    {
+      "id": "onboarding-dutch-quarterzip",
+      "thread": [
+        {
+          "role": "helper",
+          "text": "Quick question: what are you hoping to do with a Vinted bot?"
+        },
+        {
+          "role": "customer",
+          "text": "reselling. Ralp lauren truien met quarter zip. Maat L of XL. meldingen. als het goede deals vindt"
+        }
+      ],
+      "language": "nl",
+      "expects": "answer",
+      "must_mention": [
+        "quick-tutorials|use-vinted-bot",
+        "url|link"
+      ],
+      "source": "real ticket, the first Dutch one in the set",
+      "note": "Added after comparing Gemini against luna on this ticket. Gemini gave more usable steps, but invented a claim about the market ('Ralph Lauren quarter-zips doen het erg goed in de reselling') - there is nothing like that in the corpus - and two of the three channels were missing the hash, so they did not turn into links inside Discord.\n\nWhat to watch: concrete steps with a URL, every channel with '#', NO claim about which brands sell well.",
+      "must_not_mention": [
+        "whitelabel|white label|white-label"
+      ]
+    },
+    {
+      "id": "whitelabel-own-server",
+      "question": "Hey, we run a uk based reselling server and are looking to change our Vinted monitor providers, can you give me more info on what features you offer and pricing please :)",
+      "language": "en",
+      "expects": "answer",
+      "must_mention": [
+        "150",
+        "whitelabel|white label"
+      ],
+      "source": "real ticket",
+      "note": "Whitelabel was not in the corpus at all - it was added as a note. Here the person asks directly about their own community, so repeating the prices IS allowed. The opposite is guarded by the onboarding cases through must_not_mention: there nobody asked about their own server, and the bot should not offer one unprompted."
+    },
+    {
+      "id": "watch-does-not-buy",
+      "thread": [
+        {
+          "role": "customer",
+          "text": "Why watch function still not autobuying items if clicked?"
+        },
+        {
+          "role": "customer",
+          "text": "https://www.vinted.es/items/1234567890 [obrázok] no actions"
+        }
+      ],
+      "language": "en",
+      "expects": "answer",
+      "source": "real ticket",
+      "verified_absent": "The documentation describes both Watch Hidden and autocop, but it does NOT explain why autocop would fail on one particular item. The owner treated it as a bug and shipped an update - the cause was never named. | NO LONGER TRUE: the note 'watch-is-not-autocop' covers the topic, the case is not a gap any more.",
+      "note": "From a replay of the threads. The model INVENTED the explanation - it built it on the page about Watch Hidden, which looks related, and repeated it three times in a row even after the customer wrote 'its not working, again'.\n\nA second mistake in the same round: the text FOR THE CUSTOMER came out in Slovak, although the thread was English. That is why this case is a language test as well.\n\nRECLASSIFIED from 'gap' to 'answer'. Exactly as predicted: since the note 'watch-is-not-autocop' exists, the model has the answer. In a later run it explained that Watch Hidden does not buy the item, only watches it, and offered the distinction itself: 'If you meant autocop rather than Watch Hidden, let me know'. That is no longer a gap.\n\nThe language part of the case still stands - the thread is English and NA ODOSLANIE has to be in English.",
+      "must_mention": [
+        "watch"
+      ]
+    },
+    {
+      "id": "speed-and-ban-risk",
+      "language": "en",
+      "expects": "answer",
+      "source": "real ticket",
+      "verified_absent": "grep -rinE 'souk|competitor|faster than|compared to (other|another)|rival' data/docs/en/ -> two hits, both off topic: docs.md:21 'faster than manual browsing' and guide.md:16 'faster than any algorithm'. A comparison of speed with another bot is not in the corpus. | No longer a gap: the note 'speed-vs-other-bots' was added. The grep stays as evidence that the OFFICIAL docs contain no comparison with competitors - which is why the note had to exist. | ADDED during an audit: home_faq.md:15 has the question 'How is Fyndit different from other bots?' and answers it - running inside Discord, no app to install, alerts without delay, a real free plan. The original grep missed it, because the pattern looked for 'souk|competitor|faster than|rival' and not for 'other bots'. The claim of absence therefore holds only for a COMPARISON OF SPEED, not for the question 'how are you different'.",
+      "note": "A PARTIAL ANSWER. In a single message the customer asks TWO things and only one of them is a gap:\n\n1. Speed compared with Souk and other bots - NOT in the docs, the marker belongs.\n2. The risk of the account being banned - it IS in the docs: home_faq.md:13 ('Is autocop allowed on Vinted?' -> 'Each user remains responsible for how they use the tool, in line with the terms of the platform they buy on'), cgu.md:51 and cgv.md:92 (the user is solely responsible for their automations).\n\nMeasured while replaying the thread 'questions-before-buying': the model raised the gap marker and sent the customer only 'Hey, I'll check that for you and get back to you shortly.' It threw the answer about the ban away.\n\nInto the NÁVRH it wrote that the documentation warns about the account being restricted - which is a misreading: cgu.md:61 says THIRD PARTIES may restrict their services, and cgu.md:75 that FYNDIT may suspend access to Fyndit. Neither is about a Vinted account being banned. The real answer was elsewhere and it did not find it.\n\nThe cause is in the prompt: 'Do not answer the original question anyway' is written for a single question, and the example under it is single-question too.\n\nRECLASSIFIED from 'gap' to 'answer'. The note 'speed-vs-other-bots' filled in the FIRST half (speed against other bots): on average we are not slower and often faster, but nobody has good measurements, because no server publishes statistics. The second half (the ban) had been covered before that. So neither part is a gap any more and the marker would be wrong here.\n\nCAREFUL WITH COMPARISONS: the 'before the fix' measurement (0/3, stably bad) ran while this was still a gap case and BEFORE that note. Later runs are therefore not directly comparable with it - the clean measurement of the partial-answer bug is 'reserve-item-and-api', where the second half of the question does not stop being a gap.\n\nThe third required expression (statistic|measur|...) is deliberately strict: it forces the honest half of the answer about speed. If it turns out to be a source of noise, loosen it on the basis of runs, not of an impression.",
+      "thread": [
+        {
+          "role": "customer",
+          "text": "Bonjour\nhello\ni have some questions if it is fine for you to answer"
+        },
+        {
+          "role": "customer",
+          "text": "when you buy the access, is it real fast ? like does it compete with other bots like souk or any other ones\ndo i risk to get my account banned ?"
+        }
+      ],
+      "must_mention_sent": [
+        "ban|restrict|suspend|penal",
+        "responsib|guarantee|garant",
+        "statistic|measur|benchmark|numbers|figures"
+      ]
+    },
+    {
+      "id": "reserve-item-and-api",
+      "language": "en",
+      "expects": "gap",
+      "source": "real ticket",
+      "verified_absent": "grep -rinE 'headless|automat(ed|ion) (browser|via)|through the api|via api|api call' data/docs/en/ -> no result. Control question: grep -rilE 'monitor' data/docs/en/ | wc -l -> 31, so the grep works. Whether the bot buys through an API or through a browser is not in the corpus.",
+      "note": "A PARTIAL ANSWER, second shape. The customer asks TWO things:\n\n1. Whether an item can be held for a check before paying - there IS an answer: the pause comes from 3DS and Vinted holds the item for 15 minutes (poznamky:reserving-via-3ds, docs_3ds.md). Fyndit has no reservation button of its own and the model must not claim otherwise.\n2. Whether Fyndit buys through an API or through a browser - NOT in the docs, the marker belongs.\n\nMeasured while replaying the thread 'reserving-an-item': the model sent the customer only 'I'll check this for you and get back to you' and threw away even the answer about 3DS, which it had. In the real ticket the helper answered both halves straight away.\n\nWORDING SHORTENED: the original literal condensation shared five meaningful words with the prompt template and failed test_no_case_overlaps_with_the_examples_in_the_prompt. Both questions and the error message stayed, only the words changed.",
+      "thread": [
+        {
+          "role": "customer",
+          "text": "I tried to buy an item and Vinted said it was already part of an ongoing order by someone else. Can your bot do that too? Like when I press Buy, I would get around 2min to check if the seller is legit before paying.\nAlso, is Autobuy or manual quicker? Do yall open up a browser and click, or buy thro API?"
+        }
+      ],
+      "must_mention_sent": [
+        "3ds|3d secure|3-d secure",
+        "15 min|15-min|15 minút|15 minuti"
+      ],
+      "overlap_ok": "VERIFIED. The heuristic flagged an overlap with the notes 'dashboard-navigation' and 'delivery-speed', but those are only ordinary words (before, someone, vinted, already, around) - neither of them says what the bot buys through.\n\nThe more substantial overlap is the one the heuristic did NOT find, because the note is in Slovak: 'reserving-via-3ds' answers the FIRST half of the question (3DS, 15 minutes). That is by design, not a mistake - the case is marked as a gap because of the SECOND half (API vs. browser), and the note is exactly what should reach the customer through must_mention_sent. That is the whole point of the case: the marker for the unanswered part must NOT bring down the answered one."
+    }
+  ]
+}

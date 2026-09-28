@@ -1,0 +1,61 @@
+{
+  "_comment": [
+    "Tutorial videos published by the operator of the service.",
+    "The videos are not downloaded - we keep only the links and what each one",
+    "covers, so the bot can point at the RIGHT video instead of the same one",
+    "every time."
+  ],
+
+  "videos": [
+    {
+      "title": "Vinted Bot Fyndit : Create a Monitor",
+      "url": "https://youtu.be/trY2wazuVCM",
+      "covers": ["monitor", "create monitor", "group", "vinted link", "getting started"]
+    },
+    {
+      "title": "Vinted Bot Fyndit : Rules - Autocop",
+      "url": "https://youtu.be/kE9EaSxkM9s",
+      "covers": ["autocop", "rules", "automatic buying"]
+    },
+    {
+      "title": "Vinted Bot Fyndit : Setup Account",
+      "url": "https://youtu.be/Gl4rYQecdDw",
+      "covers": ["account setup", "first steps", "onboarding"]
+    },
+    {
+      "title": "Vinted Bot Fyndit : Rules - Ping On Match",
+      "url": "https://youtu.be/cG9LCayAVK4",
+      "covers": ["rules", "ping", "notifications", "alerts on match"]
+    },
+    {
+      "title": "Select your pickup point or home delivery details",
+      "url": "https://youtu.be/9DACBWFJZbk",
+      "covers": ["pickup point", "home delivery", "shipping", "session shipping config"]
+    },
+    {
+      "title": "Create a Webhook to send your Vinted items to another Discord!",
+      "url": "https://youtu.be/E5_gvOfS9xA",
+      "covers": ["webhook", "another discord", "external channel", "pro tier"]
+    },
+    {
+      "title": "Create a no-delay monitor on Fyndit Bot.",
+      "url": "https://youtu.be/pqq1Dsnn5j8",
+      "covers": ["no-delay", "instant livefeed", "monitor speed"]
+    },
+    {
+      "title": "Link your Vinted account to Fyndit bot!",
+      "url": "https://youtu.be/VUimczGygHI",
+      "covers": ["session", "link vinted account", "refresh token", "oauth"]
+    },
+    {
+      "title": "How to create a private channel and add links to it",
+      "url": "https://youtu.be/gCrcTbuaxWw",
+      "covers": ["private channel", "feed", "adding links"]
+    },
+    {
+      "title": "How to create a private channel | Free Vinted Bot",
+      "url": "https://youtu.be/5yllNcaQEcU",
+      "covers": ["private channel", "free tier", "setup"]
+    }
+  ]
+}

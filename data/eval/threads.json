@@ -1,0 +1,627 @@
+{
+  "_comment": [
+    "Real Discord threads, rewritten for step-by-step replay.",
+    "",
+    "Unlike cases.json there is no expected answer here. These threads are not",
+    "scored - they are replayed one message at a time and the result is read by",
+    "eye, next to what the helper or the owner actually replied.",
+    "",
+    "role: customer = the customer, helper = a support helper, owner = the owner."
+  ],
+  "threads": [
+    {
+      "id": "no-items-in-feed",
+      "language": "en",
+      "topic": "onboarding, then the customer sees no items at all",
+      "why": "The most common shape: the onboarding answer is right, but the customer is lost immediately afterwards. I want to see whether the bot repeats the same thing in the second step or moves them forward.",
+      "messages": [
+        {
+          "role": "helper",
+          "text": "Quick question: what are you hoping to do with a Vinted bot?"
+        },
+        {
+          "role": "customer",
+          "text": "im tryna resell, im doing football shirts - lower league or vintage shirts preferabbly as big prem sides like manu or liverpool are hard to sell. not sure what manual action means but if it means manually buying things and other stuff then yes"
+        },
+        {
+          "role": "helper",
+          "text": "Hey! Football shirts from lower leagues or vintage pieces sound like a good place to start. To create a monitor, set up your search directly on Vinted, copy the link from your browser's address bar, and paste it into the monitor. You can find setup guidance in #📼-quick-tutorials, and the bot and Dashboard are used in #🖥️-use-vinted-bot-here. \"Manual actions\" means that when you receive an alert, you can manually click Buy, Offer or Favorite directly from Discord. These actions are available on Plus; Free is for testing alerts without buying actions."
+        },
+        {
+          "role": "customer",
+          "text": "im not sure where to use the monitor. ive set it all up in use vinted bot here channel however i cannot see any items? im getting pinged but im not sure where from?"
+        }
+      ],
+      "outcome": "the helper explained that a monitor is not used in the channel - it watches the catalogue behind the link and the alerts go to DMs. They should check their DMs and whether messages from server members are allowed, whether the monitor is active, the session verified and the filters not too strict. In the Dashboard, open Monitors and try Test Item. Pings mean Mentions is switched on in the rule."
+    },
+    {
+      "id": "plus-to-pro-upgrade",
+      "language": "it",
+      "topic": "onboarding in Italian, then an upgrade from Plus to Pro the next day",
+      "why": "The second message is an accounting question about the overpayment. I want to see whether the bot promises the recalculation that the owner does by hand.",
+      "messages": [
+        {
+          "role": "helper",
+          "text": "Domanda veloce: cosa vuoi ottenere con un bot per Vinted?"
+        },
+        {
+          "role": "customer",
+          "text": "Faccio reselling su Vinted, principalmente prodotti Apple ed elettronica come gaming e retrogaming soprattutto Nintendo. Vorrei trovare annunci appena pubblicati a prezzi molto bassi. Per iniziare voglio ricevere alert il più velocemente possibile e acquistare manualmente. In seguito potrei valutare autobuy e auto-offer."
+        },
+        {
+          "role": "helper",
+          "text": "Ciao! Per iniziare, imposta su Vinted la ricerca usando marca, categoria e prezzo massimo, poi copia l'intero link del catalogo dalla barra degli indirizzi e incollalo in un monitor Fyndit. Plus offre il livefeed istantaneo e i pulsanti Buy, Offer e Favorite. Inizia da #📼-quick-tutorials e crea il monitor in #🖥️-use-vinted-bot-here."
+        },
+        {
+          "role": "customer",
+          "text": "ciao, ho acquistato ieri e preso dimestichezza col sistema plus, oggi vorrei acquistare il pro. Vado di prezzo pieno oppure riesco ad ottenere qualche agevolazione avendo acquistato solo ieri il plus? Grazie ed un saluto"
+        }
+      ],
+      "outcome": "the helper: you can buy Pro right away, the referral code takes 5 EUR off, and cancel Plus. The owner recalculates the remaining Plus days into Pro days for free. The order does not matter - a cancelled subscription runs to the end of the paid period, only no further payment is taken. The owner then wrote: 'I recalculated your Plus tier into Pro tier days'."
+    },
+    {
+      "id": "sniper-pricing",
+      "language": "en",
+      "topic": "whether sniper needs Pro, then a complaint about the price against the competition",
+      "why": "Four customer messages and each is a different type: a feature, a price, a comparison with a competitor, technical speed. This is exactly where threads break.",
+      "messages": [
+        {
+          "role": "helper",
+          "text": "Quick question: what are you hoping to do with a Vinted bot?"
+        },
+        {
+          "role": "customer",
+          "text": "for sniper do you need pro?"
+        },
+        {
+          "role": "customer",
+          "text": "for like autocop"
+        },
+        {
+          "role": "helper",
+          "text": "Yup. If u need any help just ask further. Till then I can give you discount code"
+        },
+        {
+          "role": "customer",
+          "text": "i wish there was a mid range option bro ahah. like i just wanna pay less just for sniper only, that's the only thing i need. why when the sniper is outsourced to other discords is it cheaper?"
+        },
+        {
+          "role": "helper",
+          "text": "But like for sniper u need everything else no? Give example, I wanna know if it's our bot"
+        },
+        {
+          "role": "customer",
+          "text": "RV, resell reserve, house of resell - they offer autocop for like £40 pm"
+        }
+      ],
+      "outcome": "the owner: outsourced bots have a delay and are not the best - they use a bot built two years ago that barely gets updates, while Fyndit now has its own exclusive bot, faster than any outsourced one. Asked again, he confirmed that even the outsourced Fyndit is faster than a named competitor, and linked the page with status and speeds."
+    },
+    {
+      "id": "pickup-points",
+      "language": "en",
+      "topic": "an excluded pickup point is still being chosen - a real bug",
+      "why": "A diagnostic thread where the cause was only found after five exchanges. I want to see whether the bot keeps escalating instead of starting to invent fixes.",
+      "messages": [
+        {
+          "role": "customer",
+          "text": "Hi I'm trying to setup my favorite pickup as I ideally want items to go to two pickup points, I've also added some to the excluded section but I am still getting items sent to the excluded pickup points? Not sure if I have done something wrong my end?"
+        },
+        {
+          "role": "owner",
+          "text": "I'll get that checked for you, will update you"
+        },
+        {
+          "role": "customer",
+          "text": "No problem thanks, last night I was in strict and today I have tried flexible but seems to be the same. I am trying to block all the Evri courier pickup points as I have had a lot of issues with them recently. [obrázok] [obrázok]"
+        },
+        {
+          "role": "owner",
+          "text": "Can you tell me if it still selects a disliked pickup point?"
+        },
+        {
+          "role": "customer",
+          "text": "I think it causes some sort of bug, as they both have the same name in the title, I have it on flexible and I get \"Pickup point configuration failed\""
+        },
+        {
+          "role": "owner",
+          "text": "Ah they both have the same name?"
+        },
+        {
+          "role": "customer",
+          "text": "Not exactly the same but both have Budgens Oak Lane Store in the name. It won't let me write the name for some reason but here are the names, so I think if I exclude the second one it also excludes the first even though I have it as my favorite. [obrázok] [obrázok]"
+        }
+      ],
+      "outcome": "the owner confirmed the cause: his code has a name-similarity check, so excluding one point also hit the favourite one with a similar name. He thanked them for finding it and asked whether being able to allow couriers as well would be better."
+    },
+    {
+      "id": "own-bot-request",
+      "language": "fr",
+      "topic": "the customer wants to build their own Vinted bot",
+      "why": "The first helper sent the person to the tutorials, although they were asking about something entirely different. I want to see whether the bot makes the same mistake.",
+      "messages": [
+        {
+          "role": "helper",
+          "text": "Petite question : qu'est-ce que tu veux faire avec un bot Vinted ?"
+        },
+        {
+          "role": "customer",
+          "text": "Je veux créer un bot Vinted"
+        },
+        {
+          "role": "helper",
+          "text": "Ho, you can check here #📼-quick-tutorials and #🖥️-use-vinted-bot-here"
+        },
+        {
+          "role": "customer",
+          "text": "Can I develop or find a developer to create my vinted web bot ?"
+        },
+        {
+          "role": "helper",
+          "text": "You can utilize white labeling"
+        },
+        {
+          "role": "customer",
+          "text": "How can I create it ?"
+        }
+      ],
+      "outcome": "the owner: we offer a whitelabel programme at 150 EUR a month, you get autocop and private monitors for your own members."
+    },
+    {
+      "id": "whitelabel-question",
+      "language": "en",
+      "topic": "the operator of another server asks about whitelabel and its price",
+      "why": "A purely commercial question. The bot is not the one to handle it, but it must not invent a price or the conditions either.",
+      "messages": [
+        {
+          "role": "customer",
+          "text": "Hey, we run a uk based reselling server and are looking to change our Vinted monitor providers, can you give me more info on what features you offer and pricing please :)"
+        },
+        {
+          "role": "owner",
+          "text": "Hi, we offer whitelabelling of course, with autocop and private monitors for your members. How many people do you currently have?"
+        },
+        {
+          "role": "customer",
+          "text": "Hard to say really, we have around 600 members in the server but only around 5-10% of them if I had to guess actually use the monitor rn so we're trying to polish the Vinted side of our server to try and onboard new members"
+        },
+        {
+          "role": "owner",
+          "text": "I see, which provider are you currently using right now if I may ask?"
+        },
+        {
+          "role": "customer",
+          "text": "We're using vintedseekers atm but looking to change soon"
+        }
+      ],
+      "outcome": "the owner: the base whitelabel price is 150 EUR a month plus a one-off 100 EUR fee for installing the bot on the server. They currently supply the bot to 13 other communities and have a cheaper whitelabel at 80 EUR if a public channel in the new bot is enough (pro tier)."
+    },
+    {
+      "id": "watch-does-not-buy",
+      "language": "en",
+      "topic": "the watch feature does not trigger autobuy",
+      "why": "The customer reports the same thing repeatedly and nothing changes. I want to see whether the bot repeats the same procedure a second time.",
+      "messages": [
+        {
+          "role": "customer",
+          "text": "Why watch function still not autobuying items if clicked?"
+        },
+        {
+          "role": "customer",
+          "text": "https://www.vinted.es/items/1234567890 [obrázok] no actions"
+        },
+        {
+          "role": "owner",
+          "text": "I will check right now"
+        },
+        {
+          "role": "customer",
+          "text": "[obrázok] its not working, again..."
+        },
+        {
+          "role": "owner",
+          "text": "Are you changing the monitor config in between?"
+        },
+        {
+          "role": "customer",
+          "text": "no"
+        }
+      ],
+      "outcome": "the owner shipped an update and asked whether it was better. The customer answered 'yeah maybe'. The cause was never named."
+    },
+    {
+      "id": "error-422",
+      "language": "en",
+      "topic": "an error code during a purchase, then a different error code",
+      "why": "A purely technical backend fault. The bot cannot solve it and must not try.",
+      "messages": [
+        {
+          "role": "customer",
+          "text": "what is ? request failed with status code 422. I wanted to buy something, but then I got this error."
+        },
+        {
+          "role": "owner",
+          "text": "Hi can you share a screenshot please?"
+        },
+        {
+          "role": "customer",
+          "text": "[obrázok] All attempts come this"
+        },
+        {
+          "role": "owner",
+          "text": "Can you try again please?"
+        },
+        {
+          "role": "customer",
+          "text": "Your proxy encountered a problem during the request, we have changed it for you, please retry the request. request failed with status code 403. i tested 4 times"
+        }
+      ],
+      "outcome": "Unresolved. the owner asked for a screenshot and for another attempt; the customer was getting 422 and 403 errors alternately, with the proxy being swapped automatically."
+    },
+    {
+      "id": "is-pro-worth-it",
+      "language": "it",
+      "topic": "is Pro worth it? 20 accounts, holding an item, autocop paid to the end",
+      "why": "A question about return on investment that the documentation has NO answer to - the right move is to point at #🛎-success and put no number on the profit. It is also the first appearance of the 15-minute hold: the model must not claim Fyndit has a reservation button, but must not deny the hold either - it comes from 3DS.",
+      "messages": [
+        {
+          "role": "helper",
+          "text": "Domanda veloce: cosa vuoi ottenere con un bot per Vinted? Compri per te o fai reselling? Quali brand, taglie, paesi o nicchie ti interessano?"
+        },
+        {
+          "role": "customer",
+          "text": "Ciao compro per rivendere, principalmente console e videogiochi, vorrei automatizzare la ricerca a autocop riservando l'articolo per 10/15 minuti cosi da controllarlo a mano e confermare oppure annullare l'ordine"
+        },
+        {
+          "role": "owner",
+          "text": "Ciao, ti consiglierei il piano Pro per un'automazione di questo tipo, soprattutto nel settore dei videogiochi e delle console, dato che e un mercato molto competitivo."
+        },
+        {
+          "role": "customer",
+          "text": "si ho visto che l'automazione rientra solo nella versione pro, ho anche visto pero il prezzo. non ti nascondo che e un bello scoglio da superare per capire effettivamente quanti vantaggi porta nella realta il piano pro in termini di numeri.\nChiaro, sulla carta sembra tutto bello ma oltre alla domanda \"quanto effettivamente e profit il pro\" vedo che e in grado di gestire 20 account vinted che forse e uno dei punti piu rilevanti da considerare per ottenere i migliori risultati da questo servizio pro.\nHai una guida o modo di spiegarmi come posso generare 20 account, come posso gestirli con cose come numeri di cellulare, indirizzi, nomi ecc?"
+        },
+        {
+          "role": "owner",
+          "text": "Puoi vedere qui i risultati ottenuti dagli utenti Pro: #🛎-success\n\nIl profitto che riuscirai a generare dipende interamente da te, dalle tue conoscenze e da quanto sei competente in una vasta selezione di nicchie. Non esiste un profitto minimo o massimo garantito: tutto dipende dalla tua dedizione, dal tempo che investi e dal lavoro che fai.\n\nInoltre si, la nostra community mette a disposizione alcuni tutorial su come creare nuovi account, ma la creazione e la gestione degli account restano interamente a tuo carico."
+        },
+        {
+          "role": "customer",
+          "text": "Luglio ci sono solo 2 success, suppongo che la gente non pubblichi i success e che i numeri siano nettamente piu alti.\nChe vantaggi ho nell'usare 20 account invece di 1?\nInoltre il piano pro offre un metodo per bloccare l'articolo per 5/10 o 15 minuti cosi da poterlo visionare e decidere se pagare o no?\nl'autocop completa il pagamento fino in fondo giusto? quindi non mi da tempo di verificare il prodotto"
+        },
+        {
+          "role": "owner",
+          "text": "Digli che molte persone lavorano su nicchie specifiche e preferiscono non condividere i propri successi per non rivelare cosa stanno facendo e quali strategie stanno utilizzando.\n\nUno dei vantaggi di avere piu account e la possibilita di provare ad acquistare lo stesso articolo contemporaneamente da piu account, aumentando cosi le probabilita di riuscire a completare l'acquisto.\n\nSi, inoltre c'e un modo per riservare un articolo per 15 minuti ogni volta che il bot tenta di acquistarlo."
+        }
+      ],
+      "outcome": "the owner recommended Pro because the console market is competitive. On the return he gave no number at all - he pointed at #🛎-success and said the profit depends entirely on the customer, their knowledge of the niche and the time they put in; no minimum and no maximum is guaranteed. The community has tutorials for setting up accounts, but creating and managing them is entirely the customer's business. In the last round he replied that many people do not publish their wins so as not to give away their strategy; the advantage of several accounts is trying to buy the same item from several of them at once. And he confirmed that the 15-minute hold does exist - always when the bot attempts a purchase, that is, through 3DS."
+    },
+    {
+      "id": "token-refresh",
+      "language": "en",
+      "topic": "Set Token Refresh rejects the token that was pasted in",
+      "why": "The error message is specific and it is not in the docs. the helper did not guess the cause - he suggested copying it again and then logging out and back in. I want to see whether the model admits the gap or invents a procedure.",
+      "messages": [
+        {
+          "role": "customer",
+          "text": "I'm having a problem with the web token refresh.\nI copied the entire token and inserted it into \"Set Token Refresh,\" but it doesn't work. It says: \"This token is not a user refresh token. Paste the value of refresh_token web.\"\n[obrázok]"
+        },
+        {
+          "role": "customer",
+          "text": "someone?"
+        },
+        {
+          "role": "helper",
+          "text": "Hmm\nTry copying again see if nothing was left out\nSometimes it happends"
+        },
+        {
+          "role": "customer",
+          "text": "Yes, I've already done it several times"
+        },
+        {
+          "role": "helper",
+          "text": "Interesting\nMaybe it's because it's expired\nPlease log out of vinted\nLog in\nAnd try again if it helps"
+        },
+        {
+          "role": "customer",
+          "text": "ok i'll try\nty"
+        }
+      ],
+      "outcome": "the helper did not guess the cause and did not pretend to know it. First he suggested copying the token again, in case something had been cut off. When the customer said they had already tried that several times, he came up with the token possibly having expired - log out of Vinted, log back in and try again. That worked: a few hours later the customer wrote 'that was it'."
+    },
+    {
+      "id": "whitelist-regex",
+      "language": "en",
+      "topic": "searching by keywords does not work, the whitelist lets too much through",
+      "why": "Exactly the question where the docs hold enough material for a confident but wrong answer. The key is that the whitelist lets an item through when a SINGLE word matches - a combination needs regex. Whether the model says that by itself, or describes the whitelist as an 'and' filter.",
+      "messages": [
+        {
+          "role": "customer",
+          "text": "I have a question. I noticed that the bot doesn't work very well with keyword searches, but rather with category searches. How can I isolate a product that falls into a generic category?\nUsing a whitelist?\nbecause I have populated the whitelist but other things also appear"
+        },
+        {
+          "role": "owner",
+          "text": "Ah yes you need to use whitelist and blacklist\nSearch text doesnt work well as vinted does a lot of abstraction that no bot is capable to reproduce\nso categories brands and sizes are better to use\nIf people put those word it will appear, whitelist checks description title etc\nso sometimes people will put hashtags or some shit to be promoted into whitelists"
+        },
+        {
+          "role": "customer",
+          "text": "So if I want to search for \"PS4 Fat Pink\" and enter:\nConsole category and PS4 platform\nWhitelist: PS4, pink, fat\nBlacklist: slim, pro, controller, etc.\nWill I only get results for listings that have the whitelisted words in the title and description, or will I still get results for PS4s that are black, blue, red, etc.?\nSo I have to work hard on the blacklist, blocking everything that might appear and only whitelisting the terms that match the item I'm looking for, right?\nI chose colors as an element just to give a simple example."
+        },
+        {
+          "role": "owner",
+          "text": "if one word match it will allow everything\nif you want combo like ps4 + pink + fat then you might want to look at regex\nit will allow you to find patterns\nyou can ask for example chatgpt to make you a pattern"
+        }
+      ],
+      "outcome": "the owner: searching by text works badly, because Vinted does a lot of abstraction that no bot can reproduce - categories, brands and sizes are better. The whitelist checks the title and the description, so people put hashtags in them to get promoted and the item passes. The key: **one matching word is enough and the whole item passes**. A combination like ps4 + pink + fat needs regex; the customer can have the pattern written by ChatGPT."
+    },
+    {
+      "id": "3ds-white-screen",
+      "language": "en",
+      "topic": "3DS confirmed in the bank app, but a white screen stays and the purchase does not complete",
+      "why": "A real product bug that dragged on for a week and the owner is still on it. The documentation has no answer for it. I want to see whether the model admits the gap and escalates - and whether it does NOT start explaining 3DS as if the customer did not know what it is. This customer already knows more than the docs.",
+      "messages": [
+        {
+          "role": "customer",
+          "text": "However, there are still problems with 3DS payment confirmation.\nEven if confirmed on Revolut, a white screen remains. I have to wait the required time for the payment to expire, but I have less than 15 minutes of Vinted reserve to repay from the Vinted app.\nAre you aware of this problem?"
+        },
+        {
+          "role": "owner",
+          "text": "Can you send me a screenshot of?"
+        },
+        {
+          "role": "customer",
+          "text": "fase 1 -> fase 2 -> fase 3\n[obrázok]\nThe square below turns white. The Revolut app tells me to go back to Vinted to complete the payment, but it doesn't complete.\nI successfully complete the payment on Revolut, but the bot doesn't close the acquisition."
+        },
+        {
+          "role": "customer",
+          "text": "it doesn't go on, keep stopping here\nI have already lost 2 items"
+        },
+        {
+          "role": "owner",
+          "text": "Do you get a notification to accept payment on Revolut ?"
+        },
+        {
+          "role": "customer",
+          "text": "yes, I confirm the payment, it tells me to go back to vinted but then it doesn't deduct the money\nand the screen remains white"
+        },
+        {
+          "role": "customer",
+          "text": "How is the resolution going? The problem is still there! Do you have a workaround?"
+        },
+        {
+          "role": "owner",
+          "text": "Hey i'm still loking at it it's very delicate problem as it invovles banking and payment 🙏"
+        },
+        {
+          "role": "customer",
+          "text": "I understand, but with my card blocked to reserve the item, I can't actually get anything anymore. I've lost count of the lost items."
+        }
+      ],
+      "outcome": "Not closed. the owner asked for screenshots, then whether a confirmation notification arrives in the bank app, and finally admitted he is still working on it and that it is a delicate problem, because it involves a bank and payments. The customer lost several items in the meantime. Twice they observed themselves that after about ten minutes the payment did go through - they sent that in as material for finding the cause. They got no workaround."
+    },
+    {
+      "id": "plus-vs-pro",
+      "language": "de",
+      "topic": "onboarding, then the difference between Plus and Pro, autocop, and why no alerts arrive",
+      "why": "Four rounds in a row about the price list - the place where the model most easily mixes up what belongs to which tier. The last round is different: the customer sends a screenshot and asks whether the search can be improved; the helper started by telling them to enable DMs. Whether the model gets that, or starts changing filters.",
+      "messages": [
+        {
+          "role": "helper",
+          "text": "Kurze Frage: Was möchtest du mit einem Vinted-Bot erreichen? Kaufst du für dich selbst oder verkaufst du weiter? Welche Marken, Größen, Länder oder Nischen interessieren dich?"
+        },
+        {
+          "role": "customer",
+          "text": "verkaufen"
+        },
+        {
+          "role": "customer",
+          "text": "ralph lauren\nalerts und sniper haben"
+        },
+        {
+          "role": "helper",
+          "text": "Hey! Für Ralph Lauren stellst du zuerst auf Vinted deine Suche nach Marke, Kategorie, Größe und Preis ein. Kopiere danach die komplette URL aus der Adresszeile — ein Monitor wird aus einem Vinted-Kataloglink erstellt.\n\nDie Einrichtung findest du im Dashboard in #🖥️-use-vinted-bot-here und die Schritte werden auch in #📼-quick-tutorials erklärt. Für automatisches Kaufen, also „Sniper“/Autocop, brauchst du Pro; Alerts kannst du mit einem Monitor bereits im Free-Plan testen.\n\nWenn du mehr Monitore oder automatisches Kaufen möchtest, schau in #🔥-subscriptions — mit dem Code DURI bekommst du 5 € Rabatt 🔥"
+        },
+        {
+          "role": "customer",
+          "text": "yo bro lohnt sich als einsteiger dieses 13 eur monatlich angebot zu taken"
+        },
+        {
+          "role": "helper",
+          "text": "Wenn du als Einsteiger hauptsächlich die Alerts testen möchtest, reicht dir Free mit einem Monitor. Plus kostet 12,90 € im Monat und bietet 50 Monitore, ein verbundenes Vinted-Konto, sofortige Alerts und manuelle Aktionen direkt in Discord, zum Beispiel Buy, Offer oder Favorite.\n\nOb es sich für dich lohnt, hängt davon ab, wie viele Monitore und Aktionen du nutzen möchtest. Erfahrungen von anderen findest du in #🛎-success\nMit dem Code DURI bekommst du 5 € Rabatt, also kostet der erste Monat 7,90 €."
+        },
+        {
+          "role": "customer",
+          "text": "noch eine frage kriege ich den snipe bot mit dem 12er angebot\nalso diese autocop"
+        },
+        {
+          "role": "helper",
+          "text": "Ja — das Angebot für ungefähr 13 € im Monat ist Plus, aber Autocop ist dort nicht enthalten. Mit Plus bekommst du 1 verbundenes Vinted-Konto, 50 Monitore und manuelle Aktionen wie Buy, Offer und Favorite.\n\nAutocop gibt es erst im Pro-Tarif für 79,90 € im Monat. Wenn du gerade anfängst, kannst du zuerst Free mit einem Monitor testen oder Plus für manuelle Käufe nutzen. Die Pläne findest du in #🔥-subscriptions"
+        },
+        {
+          "role": "customer",
+          "text": "aber man kann mit dem normalen plus auch gut geld machen oder\nnur nicht automatisiert"
+        },
+        {
+          "role": "helper",
+          "text": "Ja, auch mit der Plus-Version kannst du profitable Käufe tätigen und Geld verdienen – du führst die Käufe einfach manuell über den „Buy“-Button auf Discord aus.\n\nDeine Einnahmen hängen von deinem Schwerpunkt und deinem persönlichen Einsatz ab; ein fester Gewinn lässt sich daher nicht garantieren."
+        },
+        {
+          "role": "customer",
+          "text": "kann man diese suche irgendwie verbessern\n[obrázok]"
+        },
+        {
+          "role": "helper",
+          "text": "Schalte bitte zuerst den Empfang von Direktnachrichten von Servermitgliedern ein. Die Benachrichtigungen deines Monitors kommen normalerweise per DM — der Channel #🖥️-use-vinted-bot-here ist zum Steuern des Dashboards da und nicht dafür gedacht, alle gefundenen Artikel dort anzuzeigen.\n\nDer Monitor beginnt nach dem Erstellen mit der Vinted-Suche, aber eine Benachrichtigung kommt erst, wenn ein neuer Artikel auftaucht, der zu deinen Kriterien passt.\n\nPrüfe noch, ob der Monitor aktiv ist und deine Session verifiziert wurde. Einen konkreten Artikel kannst du mit Test Item überprüfen: Füge den Link zu einem Vinted-Artikel ein und der Bot zeigt dir, ob er deine Filter bestehen würde."
+        }
+      ],
+      "outcome": "the helper led the whole conversation. On Ralph Lauren he started with a monitor being made from a Vinted catalogue link, and pointed at #🖥️-use-vinted-bot-here and #📼-quick-tutorials. On the price list he kept the tiers strictly apart: Plus at 12,90 EUR - 50 monitors, 1 account, manual actions; autocop only with Pro at 79,90 EUR. Asked whether money can be made on Plus too, he said yes, by hand through the Buy button, but guaranteed no profit - and added that he does not use autocop himself, because he does not need it in his own category. On the last screenshot he did NOT start changing filters: the first thing he said was to allow DMs from server members, because the alerts go to DMs and the channel they mentioned is for operating the dashboard. Only then did he add that a monitor only reports NEW items, and recommended Test Item."
+    },
+    {
+      "id": "onboarding-nike",
+      "language": "fr",
+      "topic": "onboarding: buys and sells, nike and under armour running, does not know what they want",
+      "why": "The customer answered all four questions and twice wrote 'je sais pas'. This is not an unclear question - it is a beginner. The model should not keep asking, it should walk them through the start.",
+      "messages": [
+        {
+          "role": "helper",
+          "text": "Petite question : qu'est-ce que tu veux faire avec un bot Vinted ? Tu achètes pour toi ou pour revendre ? Quelles marques, tailles, pays ou niches t'intéressent ? Tu veux juste des alertes, des actions manuelles ou de l'automatisation ?"
+        },
+        {
+          "role": "customer",
+          "text": "Tu achètes pour toi ou pour revendre ? les 2\nQuelles marques, tailles, pays ou niches t'intéressent ? nike running, under armour running\nTu veux juste des alertes, des actions manuelles ou de l'automatisation ? je sais pas je verrais\nQu'est-ce qui rendrait Fyndit vraiment utile pour toi ? je sais pas"
+        },
+        {
+          "role": "helper",
+          "text": "Salut ! Pour commencer, regarde #📼-quick-tutorials pour voir comment tout configurer, puis ouvre le Dashboard dans #🖥️-use-vinted-bot-here .\n\nPour créer un monitor, configure ta recherche sur Vinted, par exemple pour les articles Nike ou Under Armour running, copie l'URL du catalogue depuis la barre d'adresse et colle-la dans le monitor. Tu peux ainsi surveiller plusieurs tailles, catégories et fourchettes de prix en même temps.\n\nSi tu ne sais pas encore ce qu'il te faut, commence avec le plan Free pour tester un monitor et recevoir des alertes. Les actions manuelles comme acheter ou faire une offre sont disponibles avec Plus, tandis que l'achat automatique avec Autocop est disponible avec Pro. Pour un abonnement, tu peux utiliser le code DURI pour obtenir 5 € de réduction 🔥"
+        }
+      ],
+      "outcome": "the helper stopped asking - the customer twice wrote 'je sais pas' and it was clear they were a beginner. He sent them to #📼-quick-tutorials and #🖥️-use-vinted-bot-here, explained that a monitor is made from a Vinted catalogue URL (nike / under armour running), and recommended starting on Free with one monitor. Manual actions are in Plus, autocop in Pro. The referral code at the end."
+    },
+    {
+      "id": "questions-before-buying",
+      "language": "en",
+      "topic": "speed against other bots, ban risk, how it works, French sellers only?",
+      "why": "Six rounds of questions from somebody still deciding. Two of them are outside the documentation (speed against competitors, ban risk) and the helper answered them carefully and without guarantees. I want to see whether the model puts numbers on speed and whether it promises safety on the ban.",
+      "messages": [
+        {
+          "role": "customer",
+          "text": "Bonjour\nhello\nidk\ni have some questions if it is fine for you to answer"
+        },
+        {
+          "role": "customer",
+          "text": "when you buy the access, is it real fast ? like does it compete with other bots like souk or any other ones\ndo i risk to get my account banned ?"
+        },
+        {
+          "role": "helper",
+          "text": "depends on how every system \"feels\" that day. but on average we surely aint slower 🫡 and many times faster\nbut nobody has good measurements because no server publicly post their statistics\n\nThere's no guarantee that your Vinted account won't be restricted or banned. Fyndit is an independent tool, and Vinted may change its rules, restrict an account, or refuse automated actions.\n\nYou're responsible for your account settings, automations, and following Vinted's rules. Fyndit can't guarantee that Vinted will accept the automation or that no penalty will occur.\n\nbut for most people you dont get banned at all on main account"
+        },
+        {
+          "role": "customer",
+          "text": "alright thanks for answering\nso how does it work really ? i get a notification in my dms, i click the link and it gets me to the vinted page directly ?"
+        },
+        {
+          "role": "helper",
+          "text": "Yes — when your monitor finds an item, you'll receive a Discord notification, usually by DM. Clicking the item title or the View button opens the listing directly on Vinted.\n\nThe notification also shows the item details, and depending on availability you can use buttons like Buy, Offer, Favorite, or Block. You set up and manage your monitor in the Dashboard, which you'll find in #🖥️-use-vinted-bot-here ."
+        },
+        {
+          "role": "customer",
+          "text": "i'll take a discount for sure, but like does it only show me sellers from France ?"
+        },
+        {
+          "role": "helper",
+          "text": "It depends on the Vinted domain you've set for your session — for example, a session on vinted.fr can also see sellers from Austria, Belgium, Germany, Ireland, Italy, Luxembourg, the Netherlands, Portugal and Spain.\n\nIf you want to monitor more regions, you can create sessions on multiple domains in the Dashboard → Sessions."
+        },
+        {
+          "role": "customer",
+          "text": "alright thx for the informations\nlast question and then i wont bother you\ni cant buy directly from the notification, can i ?"
+        },
+        {
+          "role": "customer",
+          "text": "also, if i want to be off the app, can i just stop the payment ?\nthanks for answering my questions"
+        },
+        {
+          "role": "helper",
+          "text": "You can ofc\n\nWith plus you don't have autocop\nBot won't buy anything without u clicking the button\nWith pro u can toggle autocop (which buys when rules match) on and off"
+        }
+      ],
+      "outcome": "Six rounds before a purchase. On speed the helper gave no numbers: he said it depends on the day, on average they are not slower and often faster, and added straight away that nobody has good measurements because no server publishes statistics. On the ban he promised no safety - Fyndit is an independent tool, Vinted can change its rules, the responsibility is the user's; only then did he add the experience that most people have nothing happen to their main account and there had been no warnings in a year. He then explained the DM alerts and the Buy/Offer/Favorite/Block buttons, the dependence on the session's domain for countries and the option of several domains. Finally he confirmed that the subscription can be cancelled easily and that without Pro the bot buys nothing by itself."
+    },
+    {
+      "id": "buy-button",
+      "language": "fr",
+      "topic": "wants to buy by hand through the Buy button",
+      "why": "the helper FIRST asked whether they wanted autocop or to do it by hand - and only then answered. That is exactly the behaviour we want: a short follow-up question during onboarding, where 'I am buying for myself' does not yet say which feature should do it.",
+      "messages": [
+        {
+          "role": "helper",
+          "text": "Petite question : qu'est-ce que tu veux faire avec un bot Vinted ? Tu achètes pour toi ou pour revendre ?"
+        },
+        {
+          "role": "customer",
+          "text": "Acheter pour moi"
+        },
+        {
+          "role": "helper",
+          "text": "Salut ! Tu veux que Fyndit achète automatiquement les articles pour toi avec Autocop, ou tu préfères lancer les achats manuellement avec le bouton Buy ?"
+        },
+        {
+          "role": "customer",
+          "text": "Achter avec le bouton Buy"
+        },
+        {
+          "role": "helper",
+          "text": "Quand tu reçois une notification pour un article, clique sur le bouton Buy. S'il existe déjà une file pour cet article, tu la rejoindras ; sinon, une nouvelle file sera créée et le bot lancera l'achat.\n\nAvant cela, vérifie que tu as une session active et authentifiée, ainsi que la livraison correctement configurée, car il s'agit d'un véritable achat sur Vinted."
+        }
+      ],
+      "outcome": "the helper FIRST asked whether they wanted autocop or manual buying through Buy - even though the customer had only written 'Acheter pour moi'. Only after the answer did he explain the procedure: after the notification click Buy, or join an existing queue, otherwise a new one is opened. And he pointed out that an active verified session and delivery settings have to be in place first, because this is a real purchase on Vinted. The referral code at the end."
+    },
+    {
+      "id": "reserving-an-item",
+      "language": "en",
+      "topic": "'payment failed, some items belong to another ongoing purchase' - is that a feature of the bot?",
+      "why": "The customer took somebody else's reservation for a feature of our bot and wanted the same. The right answer is that it is not ours - it is a Vinted thing and the delay comes from 3DS, which holds the item for 15 minutes. Exactly the case the note reserving-via-3ds was written for.",
+      "messages": [
+        {
+          "role": "customer",
+          "text": "Hello, Today I was trying to buy a listing that just poped up on vinted bot, and I got this message (translated): We apologize, the payment failed. Some items belong to another ongoing purchase. Please try again. If the problem persists, contact us.\n\nIs it possible to do the same thing on your bot? Is it like autobuy with a custom feature? Or your bot doesn't support this. So like if Buy, i would have like 2min to accept the payment, so I could check if the listing is legit"
+        },
+        {
+          "role": "customer",
+          "text": "Like this\n[obrázok]\nAlso, If your on the channel, would it be faster Autobuy or manualy buying?\nLike do yall open up a browser, then click the buttons or buy thro API?"
+        },
+        {
+          "role": "helper",
+          "text": "It's easier to press the 'buy' button on the api, you lose seconds if you go on browser."
+        },
+        {
+          "role": "customer",
+          "text": "And what about this?\nLike to have the order reservation"
+        },
+        {
+          "role": "customer",
+          "text": "Can yall help?"
+        },
+        {
+          "role": "helper",
+          "text": "its not something custom\nits just a basic vinted feature\nsomeone was just faster\n(probably used autocop)\nand how to have some time to see if you really want it or no\nis 3DS\nsecurity\nin your bank"
+        },
+        {
+          "role": "customer",
+          "text": "Aaah, so its just 3ds\nIf you guys know how long does it hold the listing"
+        },
+        {
+          "role": "helper",
+          "text": "15 mins"
+        }
+      ],
+      "outcome": "The customer thought that somebody else reserving an item was a feature of the bot, and wanted the same - 2 minutes to check the listing before paying. the helper put it right: it is nothing of ours and nothing bespoke, it is an ordinary Vinted thing and somebody was simply faster (probably through autocop). The time to think comes from 3DS, the bank's security step. Asked how long the item is held, he answered: 15 minutes. The question about the description not being saved in the preferences was never picked up by anyone."
+    },
+    {
+      "id": "what-to-sell",
+      "language": "fr",
+      "topic": "a beginner with 250 EUR asks what to resell - and whether the paid bot sells by itself",
+      "why": "Two different steps. The first is advice that is not in the docs (what to resell) - the helper answered carefully, without promising profit. The second is THE question the note bot-is-for-buying was written for: 'le bot version payant automatiquement vend les objets c sa?' the helper: 'Non, ce bot ne peut qu'acheter.'",
+      "messages": [
+        {
+          "role": "helper",
+          "text": "Petite question : qu'est-ce que tu veux faire avec un bot Vinted ? Tu achètes pour toi ou pour revendre ?"
+        },
+        {
+          "role": "customer",
+          "text": "bonjour jai juste 250 euro avec le pass culture et je me demandais quoi revendre pour ensuite utiliser un bot et faire de largents avec"
+        },
+        {
+          "role": "helper",
+          "text": "Salut ! Commence plutôt par une ou deux catégories que tu connais bien — par exemple les sneakers, le streetwear, le luxe ou le vintage. Cherche des articles dont tu peux estimer la vraie valeur et le prix de revente possible. Les bénéfices ne sont pas garantis, donc le mieux est de commencer prudemment et de ne pas dépenser tout ton budget d'un coup.\n\nRegarde d'abord les tutoriels dans #📼-quick-tutorials , puis configure ton monitor dans #🖥️-use-vinted-bot-here . Un monitor se crée à partir d'un lien de catalogue Vinted : tu appliques tes filtres sur Vinted, tu copies l'URL depuis la barre d'adresse et tu la colles dans le monitor.\n\nSi tu veux ensuite plus de monitors ou des fonctions automatiques, regarde #🔥-subscriptions — le code DURI te donne 5 € de réduction 🔥"
+        },
+        {
+          "role": "customer",
+          "text": "merci beaucoup et oui je compte bien sur utiliser et acheter le bot si je vois que jy arrive car jai eu 18 et jpeut tjr pas travailler a cause de mes problemes de sante dcppp jai pas de revenues\nfaudrais que je trouve quoi acheter sur le pass culture puis ensuite le revendre\nle bot version payant par contre automatiquement vend les objects c sa?"
+        },
+        {
+          "role": "helper",
+          "text": "Non, ce bot ne peut qu'acheter ; rien n'est vendu par son intermédiaire."
+        }
+      ],
+      "outcome": "A beginner with 250 EUR and no income. the helper promised no profit: he recommended starting with one or two categories they know, buying things whose value they can judge, and not spending the whole budget at once. Plus the tutorials and the procedure with the catalogue link. Asked directly whether the paid bot sells by itself, he answered in one sentence, without hedging: 'Non, ce bot ne peut qu'acheter ; rien n'est vendu par son intermediaire.'"
+    }
+  ]
+}
